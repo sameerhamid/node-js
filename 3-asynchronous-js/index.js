@@ -68,8 +68,30 @@ const getDogPic = async () => {
         const writFileData = await writeFilePro(`${__dirname}/dog-image.txt`, res.body.message);
         console.log(writFileData)
     } catch (error) {
-        console.log(error)
+        console.log(error);
+        throw error(error)
     }
+    return 'Ready!'
 }
 
-getDogPic();
+// console.log("1: Will get dog pics");
+// // const x = getDogPic();
+// // console.log(x);
+// getDogPic().then(data=>{
+//     console.log(data);
+//     console.log("2: Done getting dog pics");
+// }).catch(err=>{
+//     console.log(err)
+// })
+// // console.log("1: Done getting dog pics");
+
+(async()=>{
+    try {
+        console.log("1: will get the dog pics")
+        const x = await getDogPic();
+        console.log(x);
+        console.log("2: Done getting dog pics")
+    } catch (error) {
+        console.log(error)
+    }
+})()
