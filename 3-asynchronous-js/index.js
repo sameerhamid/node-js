@@ -59,20 +59,20 @@ const writeFilePro = (file, data)=>{
 // })
 
 
-const getDogPic = async () => {
-    try {
-        const data = await readFilePro(`${__dirname}/dog.txt`);
-        console.log(data.toString());
-        const res = await superagent.get(`https://dog.ceo/api/breed/${data.toString()}/images/random`);
-        console.log("result>>>", JSON.stringify(res.body.message));
-        const writFileData = await writeFilePro(`${__dirname}/dog-image.txt`, res.body.message);
-        console.log(writFileData)
-    } catch (error) {
-        console.log(error);
-        throw error(error)
-    }
-    return 'Ready!'
-}
+// const getDogPic = async () => {
+//     try {
+//         const data = await readFilePro(`${__dirname}/dog.txt`);
+//         console.log(data.toString());
+//         const res = await superagent.get(`https://dog.ceo/api/breed/${data.toString()}/images/random`);
+//         console.log("result>>>", JSON.stringify(res.body.message));
+//         const writFileData = await writeFilePro(`${__dirname}/dog-image.txt`, res.body.message);
+//         console.log(writFileData)
+//     } catch (error) {
+//         console.log(error);
+//         throw error(error)
+//     }
+//     return 'Ready!'
+// }
 
 // console.log("1: Will get dog pics");
 // // const x = getDogPic();
@@ -84,6 +84,28 @@ const getDogPic = async () => {
 //     console.log(err)
 // })
 // // console.log("1: Done getting dog pics");
+
+// -------------------- waiting for multiple promises simultanously-------------------
+
+const getDogPic = async () => {
+    try {
+        const data = await readFilePro(`${__dirname}/dog.txt`);
+        console.log(data.toString());
+        const res1 = superagent.get(`https://dog.ceo/api/breed/${data.toString()}/images/random`);
+        const res2 = superagent.get(`https://dog.ceo/api/breed/${data.toString()}/images/random`);
+        const res3 = superagent.get(`https://dog.ceo/api/breed/${data.toString()}/images/random`);
+        const all = await Promise.all([res1, res2, res3]);
+        const imagesArr = all.map(it => it.body.message);
+        console.log("result>>>", JSON.stringify(imagesArr));
+        const writFileData = await writeFilePro(`${__dirname}/dog-image.txt`, imagesArr.join('\n'));
+        console.log(writFileData)
+    } catch (error) {
+        console.log(error);
+        throw error(error)
+    }
+    return 'Ready!'
+}
+
 
 (async()=>{
     try {
