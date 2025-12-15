@@ -6,13 +6,29 @@ const PORT = 3000;
 
 app.use(express.json());
 
-const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`).toString())
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`).toString()) as [any]
 
 app.get('/api/v1/tours', (req, res)=>{
     res.status(200 ).json({
         status: 'success',
         results: tours?.length ?? 0,
         data: {tours},
+    })
+})
+
+app.get('/api/v1/tours/:id', (req, res)=>{
+    console.log(req.params.id);
+    const tour = tours.find((el: any) => el.id === +req.params.id)
+    if(!tour){
+        return res.status(404).json({
+            status: 'failed',
+            message: 'Invalid ID',
+        })
+    }
+    res.status(200 ).json({
+        status: 'success',
+        results: tours?.length ?? 0,
+        data: {tour },
     })
 })
 
