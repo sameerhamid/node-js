@@ -6,11 +6,23 @@ const PORT = 3000;
 
 app.use(express.json());
 
+app.use((req, res, next)=>{
+    console.log("Hello from the middleware");
+    next();
+})
+
+app.use((req: any, res, next)=>{
+    req.requestTime = new Date().toISOString();
+    next();
+})
+
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`).toString()) as [any];
 
 const getAllTours = (req: any, res: any) => {
+    console.log(req.requestTime);
     res.status(200).json({
         status: 'success',
+        requestedAt: req.requestTime,
         results: tours?.length ?? 0,
         data: { tours },
     })
