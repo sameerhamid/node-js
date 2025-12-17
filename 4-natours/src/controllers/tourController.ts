@@ -1,31 +1,43 @@
 import fs from 'fs';
 import {tours} from '../../dev-data';
+import { NextFunction } from 'express';
 
 // const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`).toString()) as [any];
 
-const getAllTours = (req: any, res: any) => {
-    console.log(req.requestTime);
-    // console.log(req.connection);
-    res.status(200).json({
-        status: 'success',
-        requestedAt: req.requestTime,
-        results: tours?.length ?? 0,
-        data: { tours },
-    })
-}
-
-const getTour = (req: any, res: any) => {
-    console.log(req.params.id);
-    const tour = tours.find((el: any) => el.id === +req.params.id)
+const checkID = (req: any, res: any, next: NextFunction, val: any)=>{
+    console.log('Tour id is', val);
+    const tour = tours.find((el: any) => el.id === +val)
     if (!tour) {
         return res.status(404).json({
             status: 'failed',
             message: 'Invalid ID',
         })
     }
+    next()
+}
+
+const getAllTours = (req: any, res: any) => {
+    console.log(req.requestTime);
+    // console.log(req.connection);
+    // res.status(200).json({
+    //     status: 'success',
+    //     requestedAt: req.requestTime,
+    //     results: tours?.length ?? 0,
+    //     data: { tours },
+    // })
+}
+
+const getTour = (req: any, res: any) => {
+    // console.log(req.params.id);
+    const tour = tours.find((el: any) => el.id === +req.params.id)
+    // if (!tour) {
+    //     return res.status(404).json({
+    //         status: 'failed',
+    //         message: 'Invalid ID',
+    //     })
+    // }
     res.status(200).json({
         status: 'success',
-        results: tours?.length ?? 0,
         data: { tour },
     })
 }
@@ -46,13 +58,13 @@ const createTour = (req: any, res: any) => {
 }
 
 const updateTour = (req: any, res: any) => {
-    const tour = tours.find((el: any) => el.id === +req.params.id)
-    if (!tour) {
-        return res.status(404).json({
-            status: 'failed',
-            message: 'Invalid ID',
-        })
-    }
+    // const tour = tours.find((el: any) => el.id === +req.params.id)
+    // if (!tour) {
+    //     return res.status(404).json({
+    //         status: 'failed',
+    //         message: 'Invalid ID',
+    //     })
+    // }
     res.status(200).json({
         status: 'success',
         data: {
@@ -62,17 +74,17 @@ const updateTour = (req: any, res: any) => {
 }
 
 const deletTour = (req: any, res: any) => {
-    const tour = tours.find((el: any) => el.id === +req.params.id)
-    if (!tour) {
-        return res.status(404).json({
-            status: 'failed',
-            message: 'Invalid ID',
-        })
-    }
+    // const tour = tours.find((el: any) => el.id === +req.params.id)
+    // if (!tour) {
+    //     return res.status(404).json({
+    //         status: 'failed',
+    //         message: 'Invalid ID',
+    //     })
+    // }
     res.status(204).json({
         status: 'success',
         data: null
     })
 }
 
-export {getAllTours, getTour, createTour, updateTour, deletTour}
+export {getAllTours, getTour, createTour, updateTour, deletTour, checkID}
