@@ -16,6 +16,17 @@ const checkID = (req: any, res: any, next: NextFunction, val: any)=>{
     next()
 }
 
+const checkBody = (req: any, res: any, next: NextFunction)=>{
+    const body = req.body;
+    if(!body.name || !body.price){
+        return res.status(400).json({
+            status: 'failed',
+            message: 'Missing name or proce'
+        })
+    }
+    next()
+}
+
 const getAllTours = (req: any, res: any) => {
     console.log(req.requestTime);
     // console.log(req.connection);
@@ -87,4 +98,4 @@ const deletTour = (req: any, res: any) => {
     })
 }
 
-export {getAllTours, getTour, createTour, updateTour, deletTour, checkID}
+export {getAllTours, getTour, createTour, updateTour, deletTour, checkID, checkBody}
