@@ -30,12 +30,12 @@ const checkBody = (req: any, res: any, next: NextFunction)=>{
 const getAllTours = (req: any, res: any) => {
     console.log(req.requestTime);
     // console.log(req.connection);
-    // res.status(200).json({
-    //     status: 'success',
-    //     requestedAt: req.requestTime,
-    //     results: tours?.length ?? 0,
-    //     data: { tours },
-    // })
+    res.status(200).json({
+        status: 'success',
+        requestedAt: req.requestTime,
+        results: tours?.length ?? 0,
+        data: { tours },
+    })
 }
 
 const getTour = (req: any, res: any) => {

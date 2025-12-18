@@ -8,7 +8,10 @@ const app = express();
 const PORT = 3000;
 
 // 1) -------------- MIDDLEWARES ----------
-app.use(morgan('dev'));
+
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'));
+}
 app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
 

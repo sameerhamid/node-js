@@ -7,9 +7,11 @@
   "scripts": {
     "dev": "nodemon",
     "start": "node dist/app.js",
-    "build": "tsc"
+    "build": "tsc",
+    "prod": "NODE_ENV=production nodemon"
   },
   "dependencies": {
+    "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "morgan": "^1.10.1"
   },
