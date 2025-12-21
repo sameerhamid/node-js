@@ -28,7 +28,7 @@ const tourShema = new mongoose.Schema({
         type: Number,
         default: 4.5,
     }
-})
+}, {timestamps: true});
 
 const Tour = mongoose.model('Tour', tourShema);
 
