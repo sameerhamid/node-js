@@ -1,3 +1,4 @@
+import { Query } from 'mongoose';
 import Tour from './../models/tourModel';
 
 // const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`).toString()) as [any];
@@ -31,7 +32,7 @@ const getAllTours = async (req: any, res: any) => {
 			}
 		});
 
-		let query =  Tour.find(parsedQuery);
+		let query:Query<any, any> = Tour.find(parsedQuery)
 		// 2) ------------------ SORTING
 		if (req.query.sort) {
 			const sortBy = (req.query.sort as string).split(',').join(' ');
@@ -40,6 +41,12 @@ const getAllTours = async (req: any, res: any) => {
 			query = query.sort('-createdAt');
 		}
 
+		// 4) FIELD LIMITING
+		if(req.query.fields){
+			const fields = req.query.fields.split(',').join(' ');
+			query = query.select(fields);
+		}
+		query = query.select('-__v');
 		//---------------- EXICUTE THE QUERY
 		const tours = await query;
 

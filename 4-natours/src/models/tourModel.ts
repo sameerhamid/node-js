@@ -47,6 +47,7 @@ const tourShema = new mongoose.Schema({
     images: [String],
     createdAt: {
         type: Date,
+        select: false
     },
     startDate: [Date],
 }, { timestamps: true });
