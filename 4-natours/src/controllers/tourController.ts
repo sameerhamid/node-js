@@ -8,15 +8,36 @@ import Tour from './../models/tourModel';
 const getAllTours = async (req: any, res: any) => {
 	try {
 		//---------------- BUILD THE QUERY
+		// 1) FILTERING
 		const queryObj = {...req.query};
 		const excludedFields = ['page', 'sort', 'limit', 'fields'];
 		excludedFields.forEach(el => delete queryObj[el]);
-		const query =  Tour.find(queryObj);
-		// const query = Tour.find().where('duration').equals(5).where('difficulty').equals('easy');
 
+		// 2) ADVANCED FILTERING
+		let queryString = JSON.stringify(queryObj);
+		queryString = queryString.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
+		const parsedQuery = JSON.parse(queryString);
+
+		// CONVERT VALUE TO NUMBER
+		Object.keys(parsedQuery).forEach((key) => {
+			const value = parsedQuery[key];
+
+			if (typeof value === 'object' && value !== null) {
+				Object.keys(value).forEach((op) => {
+					const opValue = (value as Record<string, unknown>)[op];
+
+					if (typeof opValue === 'string' && !isNaN(Number(opValue))) {
+						(value as Record<string, number>)[op] = Number(opValue);
+					}
+				});
+			}
+		});
+
+		const query =  Tour.find(parsedQuery);
 		//---------------- EXICUTE THE QUERY
 		const tours = await query;
 
+		 // const query = Tour.find().where('duration').equals(5).where('difficulty').equals('easy');
 		// --------------- SEND RESPONSE
 		res.status(200).json({
 			status: 'success',

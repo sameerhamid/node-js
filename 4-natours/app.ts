@@ -6,7 +6,7 @@ import userRouter from './src/routes/userRoutes'
 
 const app = express();
 const PORT = 3000;
-
+app.set('query parser', 'extended');
 // 1) -------------- MIDDLEWARES ----------
 
 if (process.env.NODE_ENV === 'development') {
