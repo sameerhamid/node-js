@@ -1,8 +1,15 @@
 import { Query } from 'mongoose';
 import Tour from './../models/tourModel';
+import { NextFunction } from 'express';
 
 // const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`).toString()) as [any];
 
+const aliasTopTours = async (req: any, res: any, next: NextFunction) => {
+	req.query.limit = '5';
+	req.query.sort = '-ratingsAverage,price';
+	req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+	next();
+}
 
 const getAllTours = async (req: any, res: any) => {
 	try {
@@ -56,7 +63,7 @@ const getAllTours = async (req: any, res: any) => {
 
 		if(req.query.page){
 			const totalToursCount = await Tour.countDocuments();
-			if(skip >= totalToursCount){
+			if(skip >=  totalToursCount){
 				throw new Error('This page does not exits');
 			}
 		}
@@ -144,4 +151,4 @@ const deletTour = async (req: any, res: any) => {
 	}
 }
 
-export { getAllTours, getTour, createTour, updateTour, deletTour }
+export { getAllTours, getTour, createTour, updateTour, deletTour, aliasTopTours }
