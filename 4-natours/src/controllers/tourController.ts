@@ -1,5 +1,3 @@
-import fs from 'fs';
-import { NextFunction } from 'express';
 import Tour from './../models/tourModel';
 
 // const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`).toString()) as [any];
@@ -8,12 +6,12 @@ import Tour from './../models/tourModel';
 const getAllTours = async (req: any, res: any) => {
 	try {
 		//---------------- BUILD THE QUERY
-		// 1) FILTERING
+		// 1A) FILTERING
 		const queryObj = {...req.query};
 		const excludedFields = ['page', 'sort', 'limit', 'fields'];
 		excludedFields.forEach(el => delete queryObj[el]);
 
-		// 2) ADVANCED FILTERING
+		// 1B) ADVANCED FILTERING
 		let queryString = JSON.stringify(queryObj);
 		queryString = queryString.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
 		const parsedQuery = JSON.parse(queryString);
@@ -33,7 +31,15 @@ const getAllTours = async (req: any, res: any) => {
 			}
 		});
 
-		const query =  Tour.find(parsedQuery);
+		let query =  Tour.find(parsedQuery);
+		// 2) ------------------ SORTING
+		if (req.query.sort) {
+			const sortBy = (req.query.sort as string).split(',').join(' ');
+			query = query.sort(sortBy);
+		} else {
+			query = query.sort('-createdAt');
+		}
+
 		//---------------- EXICUTE THE QUERY
 		const tours = await query;
 
@@ -69,7 +75,6 @@ const getTour = async (req: any, res: any) => {
 }
 
 const createTour = async (req: any, res: any) => {
-	console.log(req.body);
 	try {
 		const newTour = await Tour.create(req.body);
 		res.status(201).json({
@@ -88,7 +93,7 @@ const createTour = async (req: any, res: any) => {
 
 const updateTour = async (req: any, res: any) => {
 	try {
-		const newTour = await Tour.findByIdAndUpdate(req.body, { new: true });
+		const newTour = await Tour.findByIdAndUpdate(req.params.id, req.body, { new: true });
 		res.status(201).json({
 			status: 'success',
 			data: {
