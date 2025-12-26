@@ -1,6 +1,6 @@
-import { Query } from 'mongoose';
 import Tour from './../models/tourModel';
 import { NextFunction } from 'express';
+import APIFreatures from '../utils/apiFeatures';
 
 // const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`).toString()) as [any];
 
@@ -13,65 +13,10 @@ const aliasTopTours = async (req: any, res: any, next: NextFunction) => {
 
 const getAllTours = async (req: any, res: any) => {
 	try {
-		//---------------- BUILD THE QUERY
-		// 1A) FILTERING
-		const queryObj = {...req.query};
-		const excludedFields = ['page', 'sort', 'limit', 'fields'];
-		excludedFields.forEach(el => delete queryObj[el]);
-
-		// 1B) ADVANCED FILTERING
-		let queryString = JSON.stringify(queryObj);
-		queryString = queryString.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
-		const parsedQuery = JSON.parse(queryString);
-
-		// CONVERT VALUE TO NUMBER
-		Object.keys(parsedQuery).forEach((key) => {
-			const value = parsedQuery[key];
-
-			if (typeof value === 'object' && value !== null) {
-				Object.keys(value).forEach((op) => {
-					const opValue = (value as Record<string, unknown>)[op];
-
-					if (typeof opValue === 'string' && !isNaN(Number(opValue))) {
-						(value as Record<string, number>)[op] = Number(opValue);
-					}
-				});
-			}
-		});
-
-		let query:Query<any, any> = Tour.find(parsedQuery)
-		// 2) ------------------ SORTING
-		if (req.query.sort) {
-			const sortBy = (req.query.sort as string).split(',').join(' ');
-			query = query.sort(sortBy);
-		} else {
-			query = query.sort('-createdAt');
-		}
-
-		// 4) FIELD LIMITING
-		if(req.query.fields){
-			const fields = req.query.fields.split(',').join(' ');
-			query = query.select(fields);
-		}
-		query = query.select('-__v');
-
-		// 5)-------------------- PAGINATION
-		const page = +req.query.page || 1;
-		const limit = +req.query.limit || 5;
-		const skip = (page-1) * limit;
-		query.skip(skip).limit(limit);
-
-		if(req.query.page){
-			const totalToursCount = await Tour.countDocuments();
-			if(skip >=  totalToursCount){
-				throw new Error('This page does not exits');
-			}
-		}
-
 		//---------------- EXICUTE THE QUERY
-		const tours = await query;
+		const features = new APIFreatures(Tour.find(), req.query).filter().sort().limitFields().paginate();
+		const tours = await features.query;
 
-		 // const query = Tour.find().where('duration').equals(5).where('difficulty').equals('easy');
 		// --------------- SEND RESPONSE
 		res.status(200).json({
 			status: 'success',
