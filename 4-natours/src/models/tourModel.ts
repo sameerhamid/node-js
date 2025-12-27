@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose, { Query } from 'mongoose';
 import slugify from 'slugify';
 
-const tourShema = new mongoose.Schema({
+const tourSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, 'A tour must have a name'],
@@ -54,25 +54,49 @@ const tourShema = new mongoose.Schema({
         select: false
     },
     startDates: [Date],
+    secretTour: {
+        type: Boolean,
+        default: false
+    }
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true }});
 
-tourShema.virtual('durationWeeks').get(function(){
+tourSchema.virtual('durationWeeks').get(function(){
     return this.duration / 7;
 })
 
 // 1) DOCUMENT MIDDLEWARE - Runs before .save() and .create()
-tourShema.pre('save', function(){
+tourSchema.pre('save', function(){
     this.slug = slugify(this.name, {lower: true});
 });
 
-tourShema.pre('save', function(){
+tourSchema.pre('save', function(){
     // console.log(this);
 });
 
-tourShema.post('save', function(doc, next){
+tourSchema.post('save', function(doc, next){
     // console.log(doc);
     next();
 })
 
-const Tour = mongoose.model('Tour', tourShema);
+
+// 2. QUERY MIDELEWAR -
+
+interface QueryWithStart<T> extends Query<any, T> {
+  start?: number;
+}
+tourSchema.pre<QueryWithStart<any>>(/^find/, function () {
+  this.start = Date.now();                 // ✅ now allowed
+  this.find({ secretTour: { $ne: true } }); // ✅ now typed
+});
+
+// tourSchema.pre('findOne', function(){
+//     this.find({ secretTour: { $ne: true}});
+// })
+
+tourSchema.post<QueryWithStart<any>>(/^find/, function (docs, next) {
+  console.log(`Query took ${Date.now() - this.start!} milliseconds`);
+  next();
+});
+
+const Tour = mongoose.model('Tour', tourSchema);
 export default Tour;
