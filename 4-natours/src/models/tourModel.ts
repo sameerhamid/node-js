@@ -50,7 +50,11 @@ const tourShema = new mongoose.Schema({
         select: false
     },
     startDates: [Date],
-}, { timestamps: true });
+}, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true }});
+
+tourShema.virtual('durationWeeks').get(function(){
+    return this.duration / 7;
+})
 
 const Tour = mongoose.model('Tour', tourShema);
 export default Tour;
