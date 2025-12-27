@@ -85,8 +85,8 @@ interface QueryWithStart<T> extends Query<any, T> {
   start?: number;
 }
 tourSchema.pre<QueryWithStart<any>>(/^find/, function () {
-  this.start = Date.now();                 // ✅ now allowed
-  this.find({ secretTour: { $ne: true } }); // ✅ now typed
+  this.start = Date.now();
+  this.find({ secretTour: { $ne: true } });
 });
 
 // tourSchema.pre('findOne', function(){
