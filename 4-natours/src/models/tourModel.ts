@@ -1,5 +1,6 @@
 import mongoose, { Query } from 'mongoose';
 import slugify from 'slugify';
+import validator from 'validator'
 
 const tourSchema = new mongoose.Schema({
     name: {
@@ -8,7 +9,8 @@ const tourSchema = new mongoose.Schema({
         unique: true,
         trim: true,
         maxlength: [40, 'A tour name must have less or equal than 40 chars'],
-        minlength: [10 , 'A tour name must have more  or equal than 3 chars'],
+        minlength: [10, 'A tour name must have more  or equal than 3 chars'],
+        // validate: [validator.isAlpha, 'Tour name must only contain characters'],
     },
     slug: {
         type: String,
@@ -40,7 +42,16 @@ const tourSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    priceDiscount: Number,
+    priceDiscount: {
+        type: Number,
+        validate: {
+            validator: function (val: number) {
+                // this only points to current doc on NEW document creation
+                return val < this.price;
+            },
+            message: 'Price Discount ({VALUE}) should be below regular price',
+        }
+    },
     summary: {
         type: String,
         trim: true,
@@ -64,22 +75,22 @@ const tourSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     }
-}, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true }});
+}, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
-tourSchema.virtual('durationWeeks').get(function(){
+tourSchema.virtual('durationWeeks').get(function () {
     return this.duration / 7;
 })
 
 // 1) DOCUMENT MIDDLEWARE - Runs before .save() and .create()
-tourSchema.pre('save', function(){
-    this.slug = slugify(this.name, {lower: true});
+tourSchema.pre('save', function () {
+    this.slug = slugify(this.name, { lower: true });
 });
 
-tourSchema.pre('save', function(){
+tourSchema.pre('save', function () {
     // console.log(this);
 });
 
-tourSchema.post('save', function(doc, next){
+tourSchema.post('save', function (doc, next) {
     // console.log(doc);
     next();
 })
@@ -88,7 +99,7 @@ tourSchema.post('save', function(doc, next){
 // 2. QUERY MIDELEWAR -
 
 interface QueryWithStart<T> extends Query<any, T> {
-  start?: number;
+    start?: number;
 }
 
 // tourSchema.pre('findOne', function(){
@@ -96,15 +107,15 @@ interface QueryWithStart<T> extends Query<any, T> {
 // })
 
 tourSchema.post<QueryWithStart<any>>(/^find/, function (docs, next) {
-  console.log(`Query took ${Date.now() - this.start!} milliseconds`);
-  next();
+    console.log(`Query took ${Date.now() - this.start!} milliseconds`);
+    next();
 });
 
 //3. AGGRIGATION MIDDLEWAR --------
 
-tourSchema.pre('aggregate', function() {
+tourSchema.pre('aggregate', function () {
     this.pipeline().unshift({
-        $match: { secretTour : { $ne: true } }
+        $match: { secretTour: { $ne: true } }
     })
 })
 
