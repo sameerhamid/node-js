@@ -84,10 +84,6 @@ tourSchema.post('save', function(doc, next){
 interface QueryWithStart<T> extends Query<any, T> {
   start?: number;
 }
-tourSchema.pre<QueryWithStart<any>>(/^find/, function () {
-  this.start = Date.now();
-  this.find({ secretTour: { $ne: true } });
-});
 
 // tourSchema.pre('findOne', function(){
 //     this.find({ secretTour: { $ne: true}});
@@ -97,6 +93,14 @@ tourSchema.post<QueryWithStart<any>>(/^find/, function (docs, next) {
   console.log(`Query took ${Date.now() - this.start!} milliseconds`);
   next();
 });
+
+//3. AGGRIGATION MIDDLEWAR --------
+
+tourSchema.pre('aggregate', function() {
+    this.pipeline().unshift({
+        $match: { secretTour : { $ne: true } }
+    })
+})
 
 const Tour = mongoose.model('Tour', tourSchema);
 export default Tour;
