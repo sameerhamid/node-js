@@ -8,7 +8,9 @@
     "dev": "nodemon",
     "start": "node dist/app.js",
     "build": "tsc",
-    "prod": "NODE_ENV=production nodemon"
+    "prod": "NODE_ENV=production nodemon",
+    "debug": "node --inspect-brk --inspect-publish-uid=http -r ts-node/register server.ts"
+
   },
   "dependencies": {
     "dotenv": "^17.2.3",
