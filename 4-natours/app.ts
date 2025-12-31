@@ -5,6 +5,7 @@ import { Request, Response, NextFunction } from 'express';
 import tourRouter from './src/routes/tourRoutes'
 import userRouter from './src/routes/userRoutes'
 import { AppError } from './src/utils/appError';
+import globalErrorController from './src/controllers/errorController';
 
 const app = express();
 const PORT = 3000;
@@ -36,14 +37,6 @@ app.use((req, res, next)=>{
     next(new AppError(`Can't find ${req.originalUrl} on this server!`, 400));
 });
 
-app.use((err: AppError, req: Request, res: Response, next: NextFunction)=>{
-    err.statusCode = err.statusCode || 500;
-    err.status = err.status || 'error'
-    res.status(err.statusCode).json({
-        status: err.status,
-        message: err.message,
-    });
-    next();
-});
+app.use(globalErrorController);
 
 export default app;
