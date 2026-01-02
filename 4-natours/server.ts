@@ -14,6 +14,15 @@ mongoose.connect(MONOGDB_URL).then(_con => {
 
 // console.log(process.env)
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
+
+
+process.on('unhandledRejection', ((err: any)=>{
+    console.log(err.name, err.message);
+    console.log("UNHANDLED REJECTION 🔥 SHUTTING DOWN...")
+    server.close(()=>{
+        process.exit(1);
+    })
+}))
