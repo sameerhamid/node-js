@@ -4,8 +4,13 @@ import { CastError } from 'mongoose';
 
 
 
-const handleCastErrorDB = (err: CastError)=>{
+const handleCastErrorDB = (err: CastError) => {
     const message = `Invalid ${err.path}: ${err.value}`;
+    return new AppError(message, 400);
+}
+
+const handleDuplicateFieldsDB = (err: any) => {
+    const message = `Duplicate field value: x. Please use another value!`;
     return new AppError(message, 400);
 }
 
@@ -18,7 +23,7 @@ const sendErrorForDev = (err: AppError, res: Response) => {
     })
 }
 
-const sendErrorForProd = (err: AppError, res: Response) => {
+const sendErrorForProd = (err: any, res: Response) => {
     // OPERATION ERROR, trusted errror: send message to client
     if (err.isOperational) {
         res.status(err.statusCode).json({
@@ -45,9 +50,12 @@ const errorController = (err: AppError, req: Request, res: Response, next: NextF
     if (process.env.NODE_ENV === 'development') {
         sendErrorForDev(err, res);
     } else if (process.env.NODE_ENV === 'production') {
-        let error = {...err};
+        let error = {...err} as any;
         if(error.name === 'CastError') {
-            error = handleCastErrorDB(error as any)
+            error = handleCastErrorDB(error);
+        }
+        if(error.code === 1100){
+            handleDuplicateFieldsDB(error)
         }
         sendErrorForProd(error, res);
         next();
