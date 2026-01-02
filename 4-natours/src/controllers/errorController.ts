@@ -13,8 +13,7 @@ const handleDuplicateFieldsDB = (err: any) => {
 }
 
 const handleValidationErrorDB = (err: any) => {
-    const errors = Object.values(err).map((el: any) => el.message);
-    const message = `Invalid input data ${errors.join('. ')}`;
+    const message = `Invalid input data ${err.message}`;
     return new AppError(message, 400);
 }
 
@@ -48,26 +47,34 @@ const sendErrorForProd = (err: any, res: Response) => {
     }
 }
 
-const errorController = (err: AppError, req: Request, res: Response, next: NextFunction) => {
+const errorController = (err: any, req: Request, res: Response, next: NextFunction) => {
     err.statusCode = err.statusCode || 500;
-    err.status = err.status || 'error'
+    err.status = err.status || 'error';
+
     if (process.env.NODE_ENV === 'development') {
         sendErrorForDev(err, res);
-    } else if (process.env.NODE_ENV === 'production') {
-        let error = {...err} as any;
-        if(error.name === 'CastError') {
+    }
+
+    if (process.env.NODE_ENV === 'production') {
+        let error = {...err};
+
+        error.message = err.message;
+        error.name = err.name;
+
+        if (error.name === 'CastError') {
             error = handleCastErrorDB(error);
         }
-        if(error.code === 1100){
-            handleDuplicateFieldsDB(error)
+
+        if (error.code === 11000) {
+            error = handleDuplicateFieldsDB(error);
         }
-        console.log(err)
-        if(err.name === 'ValidationError'){
-            handleValidationErrorDB(error)
+
+        if (error.name === 'ValidationError') {
+            error = handleValidationErrorDB(error);
         }
         sendErrorForProd(error, res);
-        next();
     }
-}
+};
+
 
 export default errorController;
