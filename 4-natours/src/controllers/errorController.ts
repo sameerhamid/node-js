@@ -2,8 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/appError';
 import { CastError } from 'mongoose';
 
-
-
 const handleCastErrorDB = (err: CastError) => {
     const message = `Invalid ${err.path}: ${err.value}`;
     return new AppError(message, 400);
@@ -11,6 +9,12 @@ const handleCastErrorDB = (err: CastError) => {
 
 const handleDuplicateFieldsDB = (err: any) => {
     const message = `Duplicate field value: x. Please use another value!`;
+    return new AppError(message, 400);
+}
+
+const handleValidationErrorDB = (err: any) => {
+    const errors = Object.values(err).map((el: any) => el.message);
+    const message = `Invalid input data ${errors.join('. ')}`;
     return new AppError(message, 400);
 }
 
@@ -56,6 +60,10 @@ const errorController = (err: AppError, req: Request, res: Response, next: NextF
         }
         if(error.code === 1100){
             handleDuplicateFieldsDB(error)
+        }
+        console.log(err)
+        if(err.name === 'ValidationError'){
+            handleValidationErrorDB(error)
         }
         sendErrorForProd(error, res);
         next();
