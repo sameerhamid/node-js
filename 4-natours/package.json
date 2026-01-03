@@ -10,14 +10,14 @@
     "build": "tsc",
     "prod": "NODE_ENV=production nodemon",
     "debug": "node --inspect-brk --inspect-publish-uid=http -r ts-node/register server.ts"
-
   },
   "dependencies": {
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "mongoose": "^9.0.2",
     "morgan": "^1.10.1",
-    "slugify": "^1.6.6"
+    "slugify": "^1.6.6",
+    "validator": "^13.15.26"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
