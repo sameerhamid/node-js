@@ -1,5 +1,7 @@
+import { NextFunction } from "express";
 import mongoose, { model, Schema } from "mongoose";
-import validator from 'validator'
+import validator from 'validator';
+import bcrypt from 'bcryptjs';
 
 const userSchema = new Schema({
     name: {
@@ -32,15 +34,25 @@ const userSchema = new Schema({
         required: [true, 'Please confirm your password '],
         trim: true,
         minlength: [6, 'Confirm password must have more  or equal than 6 chars'],
+        // This only works on CREATE SAVE!!!
         validate: {
             validator: function (val: string) {
                 return val === this.password;
             },
-            message: 'Password and confirm password do not match!'
+            message: 'Passwords are not the same!'
         }
     }
 }, { timestamps: true });
 
+
+userSchema.pre('save', async function(){
+    // only run this function if password was actually modified
+    if(!this.isModified('password')) return;
+    // hash the password with cost 12
+    this.password = await bcrypt.hash(this.password, 12);
+    // delete  confirmPassword failed
+    this.confirmPassword = '';
+})
 
 const User = model('User', userSchema);
 

@@ -12,6 +12,7 @@
     "debug": "node --inspect-brk --inspect-publish-uid=http -r ts-node/register server.ts"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "mongoose": "^9.0.2",
