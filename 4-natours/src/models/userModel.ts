@@ -1,9 +1,21 @@
 import { NextFunction } from "express";
-import mongoose, { model, Schema } from "mongoose";
+import mongoose, { model, Schema,  Document, HydratedDocument} from "mongoose";
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
 
-const userSchema = new Schema({
+export interface IUser extends Document {
+    name: string;
+    email: string;
+    password: string;
+    confirmPassword?: string;
+    photo?: string;
+    correctPassword(
+        candidatePassword: string,
+        userPassword: string
+    ): Promise<boolean>;
+}
+
+const userSchema = new Schema<IUser>({
     name: {
         type: String,
         required: [true, 'Please tell us your name!'],
@@ -28,31 +40,35 @@ const userSchema = new Schema({
         required: [true, 'Please provide a password'],
         trim: true,
         minlength: [6, 'A password must have more  or equal than 6 chars'],
+        select: false,
     },
     confirmPassword: {
         type: String,
         required: [true, 'Please confirm your password '],
         trim: true,
+        select: false,
         minlength: [6, 'Confirm password must have more  or equal than 6 chars'],
         // This only works on CREATE SAVE!!!
-        validate: {
-            validator: function (val: string) {
-                return val === this.password;
-            },
-            message: 'Passwords are not the same!'
-        }
+        validator: function (this: HydratedDocument<IUser>, val: string) {
+            return val === this.password;
+        },
+        message: 'Passwords are not the same!',
     }
 }, { timestamps: true });
 
 
-userSchema.pre('save', async function(){
+userSchema.pre('save', async function () {
     // only run this function if password was actually modified
-    if(!this.isModified('password')) return;
+    if (!this.isModified('password')) return;
     // hash the password with cost 12
     this.password = await bcrypt.hash(this.password, 12);
     // delete  confirmPassword failed
     this.confirmPassword = '';
 })
+
+userSchema.methods.correctPassword = async function (candidatePass: string, userPass: string) {
+    return await bcrypt.compare(candidatePass, userPass);
+};
 
 const User = model('User', userSchema);
 
