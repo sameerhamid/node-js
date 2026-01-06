@@ -26,6 +26,10 @@ const sendErrorForDev = (err: AppError, res: Response) => {
     })
 }
 
+const handleJwtError = (err: any) => new AppError('Invalid token. Please login again!', 401)
+
+const handleJwtExpiredError = (err: any) => new AppError('Your token has expired! Please login again.', 401);
+
 const sendErrorForProd = (err: any, res: Response) => {
     // OPERATION ERROR, trusted errror: send message to client
     if (err.isOperational) {
@@ -72,6 +76,14 @@ const errorController = (err: any, req: Request, res: Response, next: NextFuncti
         if (error.name === 'ValidationError') {
             error = handleValidationErrorDB(error);
         }
+
+        if(error.name === 'JsonWebTokenError') {
+            error = handleJwtError(error);
+        }
+
+        if (error.name === 'TokenExpiredError') {
+            error = handleJwtExpiredError(error)
+         }
         sendErrorForProd(error, res);
     }
 };

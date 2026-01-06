@@ -13,6 +13,8 @@ export interface IUser extends Document {
         candidatePassword: string,
         userPassword: string
     ): Promise<boolean>;
+    passwordChangedAt?: Date;
+    changePasswordAfter(JWTTimeStamp: number): boolean
 }
 
 const userSchema = new Schema<IUser>({
@@ -53,7 +55,8 @@ const userSchema = new Schema<IUser>({
             return val === this.password;
         },
         message: 'Passwords are not the same!',
-    }
+    },
+    passwordChangedAt: Date
 }, { timestamps: true });
 
 
@@ -69,6 +72,14 @@ userSchema.pre('save', async function () {
 userSchema.methods.correctPassword = async function (candidatePass: string, userPass: string) {
     return await bcrypt.compare(candidatePass, userPass);
 };
+
+userSchema.methods.changePasswordAfter = function (JWTTimeStamp: number) {
+    if (this.passwordChangedAt) {
+        return Boolean((this.passwordChangedAt.getTime()) > (JWTTimeStamp * 1000))
+    }
+    // FASLE means NOT chnaged
+    return false;
+}
 
 const User = model('User', userSchema);
 

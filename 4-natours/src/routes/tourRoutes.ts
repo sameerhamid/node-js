@@ -1,10 +1,10 @@
 import express from 'express';
 import {getAllTours, createTour, getTour, updateTour, deletTour, aliasTopTours, getTourStats, getMonthlyPlan} from '../controllers/tourController'
+import { verfiyToken } from '../controllers/authController';
 
 const router = express.Router()
 
-// router.param('id', checkID)
-
+router.use(verfiyToken);
 router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
 router.route('/stats').get(getTourStats);
 router.route('/monthly-plan/:year').get(getMonthlyPlan);
