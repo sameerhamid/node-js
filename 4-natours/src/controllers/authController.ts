@@ -1,7 +1,6 @@
-import { promisify } from 'util'
 import jwt from 'jsonwebtoken'
 import { NextFunction } from "express";
-import User from "../models/userModel";
+import User, { EUserRole } from "../models/userModel";
 import catchAsync from "../utils/catchAsync";
 import { AppError } from '../utils/appError';
 
@@ -18,7 +17,8 @@ const signUp = catchAsync(async (req: any, res: any, next: NextFunction) => {
         email: req.body.email,
         password: req.body.password,
         confirmPassword: req.body.confirmPassword,
-        passwordChangedAt: req.body.passwordChangedAt
+        passwordChangedAt: req.body.passwordChangedAt,
+        role: req.body.role
     });
 
     const token = singnToken(newUser._id.toString());
@@ -82,4 +82,13 @@ const verfiyToken = catchAsync(async (req: any, res: any, next: NextFunction) =>
     next();
 })
 
-export { signUp, login, verfiyToken };
+const restrictTo = (roles: EUserRole[]) =>{
+    return (req: any, res: any, next: NextFunction) =>{
+        if(!roles.includes(req.user.role)){
+            return next(new AppError('You don not have to permission to perform this action ', 403));
+        }
+        next();
+    }
+}
+
+export { signUp, login, verfiyToken ,restrictTo};

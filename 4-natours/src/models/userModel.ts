@@ -3,11 +3,19 @@ import mongoose, { model, Schema,  Document, HydratedDocument} from "mongoose";
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
 
+export enum EUserRole {
+    USER = 'USER',
+    GUIDE = 'GUIDE',
+    LEAD_GUIDE = 'LEAD_GUIDE',
+    ADMIN = 'ADMIN'
+}
+
 export interface IUser extends Document {
     name: string;
     email: string;
     password: string;
     confirmPassword?: string;
+    role: EUserRole;
     photo?: string;
     correctPassword(
         candidatePassword: string,
@@ -36,6 +44,11 @@ const userSchema = new Schema<IUser>({
     photo: {
         type: String,
         trim: true,
+    },
+    role: {
+        type: String,
+        enum: [EUserRole.USER, EUserRole.GUIDE, EUserRole.LEAD_GUIDE, EUserRole.ADMIN],
+        default: EUserRole.USER
     },
     password: {
         type: String,

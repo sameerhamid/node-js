@@ -1,6 +1,7 @@
 import express from 'express';
 import {getAllTours, createTour, getTour, updateTour, deletTour, aliasTopTours, getTourStats, getMonthlyPlan} from '../controllers/tourController'
-import { verfiyToken } from '../controllers/authController';
+import { restrictTo, verfiyToken } from '../controllers/authController';
+import { EUserRole } from '../models/userModel';
 
 const router = express.Router()
 
@@ -10,6 +11,6 @@ router.route('/stats').get(getTourStats);
 router.route('/monthly-plan/:year').get(getMonthlyPlan);
 
 router.route('/').get(getAllTours).post(createTour);
-router.route('/:id').get(getTour).patch(updateTour).delete(deletTour);
+router.route('/:id').get(getTour).patch(updateTour).delete(restrictTo([EUserRole.ADMIN, EUserRole.LEAD_GUIDE]), deletTour);
 
 export default router;
