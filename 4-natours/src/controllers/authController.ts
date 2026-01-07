@@ -3,6 +3,7 @@ import { NextFunction } from "express";
 import User, { EUserRole } from "../models/userModel";
 import catchAsync from "../utils/catchAsync";
 import { AppError } from '../utils/appError';
+import sendEamail from '../utils/email';
 
 
 const singnToken = (userId: string) => {
@@ -43,8 +44,13 @@ const login = catchAsync(async (req: any, res: any, next: NextFunction) => {
     if (!user || !(await user?.correctPassword(password, user.password))) {
         return next(new AppError('Incorrect email or password', 401));
     }
-    // 3) If everthing is ok, send token to client
     const token = singnToken(user._id.toString());
+    await sendEamail({
+        email: 'test@yopmail.com',
+        subject: 'This is the test message',
+        text: 'dfghjkjhghjkkjjjjjj'
+    })
+    // 3) If everthing is ok, send token to client
     res.status(200).json({
         status: 'success',
         token,
@@ -102,10 +108,24 @@ const forgotPassword = catchAsync(async (req: any, res: any, next: NextFunction)
     await user.save({ validateBeforeSave: false });
 
     // 3) Send it to users email
-    res.status(200).json({
-        status: 'success',
-        token,
-    })
+    const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${token}`;
+    const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetUrl}.\nIf you did not forget your password, please ignore this email`
+    try {
+        await sendEamail({
+            email: user.email,
+            subject: 'Your password reset token (valid for 10 min)',
+            text: message
+        })
+        res.status(200).json({
+            status: 'success',
+            message: 'Token sent to email!'
+        })
+    } catch (error) {
+        user.passwordResetToken = undefined;
+        user.passwordResetExpires = undefined;
+        await user.save({ validateBeforeSave: false });
+        return next(new AppError('There was an error sending the email. Try agian later!', 500));
+    }
 });
 
 export { signUp, login, verfiyToken ,restrictTo, forgotPassword };
