@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken'
+import crypto from 'crypto';
 import { NextFunction } from "express";
 import User, { EUserRole } from "../models/userModel";
 import catchAsync from "../utils/catchAsync";
@@ -45,11 +46,6 @@ const login = catchAsync(async (req: any, res: any, next: NextFunction) => {
         return next(new AppError('Incorrect email or password', 401));
     }
     const token = singnToken(user._id.toString());
-    await sendEamail({
-        email: 'test@yopmail.com',
-        subject: 'This is the test message',
-        text: 'dfghjkjhghjkkjjjjjj'
-    })
     // 3) If everthing is ok, send token to client
     res.status(200).json({
         status: 'success',
@@ -128,4 +124,28 @@ const forgotPassword = catchAsync(async (req: any, res: any, next: NextFunction)
     }
 });
 
-export { signUp, login, verfiyToken ,restrictTo, forgotPassword };
+const resetPassword = catchAsync(async (req: any, res: any, next: NextFunction) => {
+    // 1) Get user based on the token
+    const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+    const user = await User.findOne({passwordResetToken: hashedToken, passwordResetExpires: {
+        $gte: Date.now()
+    }});
+    // 2) If token has not expired, and there is user, set the new password
+    if(!user){
+        return next(new AppError('Token is invalid or expired', 400));
+    }
+    // 3) Update passwordChangedAt property for the user
+    user.password = req.body.password;
+    user.confirmPassword = req.body.confirmPassword;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save();
+    // 4) Log user in, send token
+    const token = singnToken(user._id.toString());
+    res.status(200).json({
+        status: 'success',
+        token,
+    })
+})
+
+export { signUp, login, verfiyToken ,restrictTo, forgotPassword, resetPassword };
