@@ -146,7 +146,7 @@ const updatePassword = catchAsync(async (req: any, res: any, next: NextFunction)
     if (!user) {
         return next(new AppError('User not found', 401));
     }
-    if(!req.body.currentPassword){
+    if(!req.body?.currentPassword){
         return next(new AppError('Please enter currentPassword', 400));
     }
     // 2) Check if POSTed current password is correct
