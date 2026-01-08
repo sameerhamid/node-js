@@ -13,6 +13,14 @@ const singnToken = (userId: string) => {
     });
 }
 
+const createSendToken = (userId: string, statusCode: number, res: any) => {
+    const token = singnToken(userId);
+    res.status(statusCode).json({
+        status: 'success',
+        token,
+    })
+}
+
 const signUp = catchAsync(async (req: any, res: any, next: NextFunction) => {
     const newUser = await User.create({
         name: req.body.name,
@@ -22,15 +30,7 @@ const signUp = catchAsync(async (req: any, res: any, next: NextFunction) => {
         passwordChangedAt: req.body.passwordChangedAt,
         role: req.body.role
     });
-
-    const token = singnToken(newUser._id.toString());
-    res.status(201).json({
-        status: 'success',
-        token,
-        data: {
-            user: newUser
-        }
-    });
+    createSendToken(newUser._id.toString(), 201, res);
 });
 
 
@@ -45,12 +45,8 @@ const login = catchAsync(async (req: any, res: any, next: NextFunction) => {
     if (!user || !(await user?.correctPassword(password, user.password))) {
         return next(new AppError('Incorrect email or password', 401));
     }
-    const token = singnToken(user._id.toString());
     // 3) If everthing is ok, send token to client
-    res.status(200).json({
-        status: 'success',
-        token,
-    })
+    createSendToken(user._id.toString(), 200, res);
 })
 
 interface TokenPayload {
@@ -141,11 +137,29 @@ const resetPassword = catchAsync(async (req: any, res: any, next: NextFunction) 
     user.passwordResetExpires = undefined;
     await user.save();
     // 4) Log user in, send token
-    const token = singnToken(user._id.toString());
-    res.status(200).json({
-        status: 'success',
-        token,
-    })
+    createSendToken(user._id.toString(), 200, res);
+});
+
+const updatePassword = catchAsync(async (req: any, res: any, next: NextFunction) => {
+    // 1) Get user from collection
+    const user = await User.findById(req.user.id).select("+password");
+    if (!user) {
+        return next(new AppError('User not found', 401));
+    }
+    if(!req.body.currentPassword){
+        return next(new AppError('Please enter currentPassword', 400));
+    }
+    // 2) Check if POSTed current password is correct
+    if (!(await user?.correctPassword(req.body.currentPassword, user.password))) {
+        return next(new AppError('Your current password is wrong', 401));
+    }
+    // 3) If so, update password
+    user.password = req.body.password;
+    user.confirmPassword = req.body.confirmPassword;
+    await user.save();
+    // 4) Log User in, send token
+    const token = singnToken(user.id);
+    createSendToken(user.id, 200, res);
 })
 
-export { signUp, login, verfiyToken ,restrictTo, forgotPassword, resetPassword };
+export { signUp, login, verfiyToken ,restrictTo, forgotPassword, resetPassword, updatePassword };
