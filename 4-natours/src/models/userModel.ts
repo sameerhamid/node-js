@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import mongoose, { model, Schema,  Document, HydratedDocument} from "mongoose";
+import mongoose, { model, Schema,  Document, HydratedDocument, Query} from "mongoose";
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
 
@@ -24,6 +24,7 @@ export interface IUser extends Document {
         userPassword: string
     ): Promise<boolean>;
     passwordChangedAt?: Date;
+    active?: boolean;
     changePasswordAfter(JWTTimeStamp: number): boolean;
     createPasswordResetToken: () => void
 }
@@ -74,7 +75,12 @@ const userSchema = new Schema<IUser>({
     },
     passwordChangedAt: Date,
     passwordResetToken: String,
-    passwordResetExpires: Date
+    passwordResetExpires: Date,
+    active: {
+        type: Boolean,
+        default: true,
+        select: false
+    }
 }, { timestamps: true });
 
 
@@ -91,6 +97,11 @@ userSchema.pre('save', async function(){
     if (!this.isModified('password') || this.isNew) return;
     this.passwordChangedAt = new Date(Date.now() - 1000);
 })
+
+userSchema.pre<Query<any, IUser>>(/^find/, function () {
+    // this point to the current query
+    this.find({ active: { $ne: false } });
+});
 
 userSchema.methods.correctPassword = async function (candidatePass: string, userPass: string) {
     return await bcrypt.compare(candidatePass, userPass);
