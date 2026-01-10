@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto';
 import { NextFunction } from "express";
-import User, { EUserRole } from "../models/userModel";
+import User, { EUserRole, IUser } from "../models/userModel";
 import catchAsync from "../utils/catchAsync";
 import { AppError } from '../utils/appError';
 import sendEamail from '../utils/email';
@@ -13,11 +13,21 @@ const singnToken = (userId: string) => {
     });
 }
 
-const createSendToken = (userId: string, statusCode: number, res: any) => {
-    const token = singnToken(userId);
+const createSendToken = (user: IUser, statusCode: number, res: any) => {
+    const token = singnToken(user._id.toString());
+    const cookieOptions = {
+        expires: new Date(Date.now() + (+process.env.JWT_COOKIE_EXPIRES_IN! * 24 * 60 * 60 * 1000)),
+        ...(process.env.NODE_ENV === 'production' && { secure: true }),
+        httpOnly: true
+    }
+    res.cookie('jwt', token, cookieOptions);
+    // Remove the password from the output
+    user.password = ''
+
     res.status(statusCode).json({
         status: 'success',
         token,
+        data: { user }
     })
 }
 
@@ -30,7 +40,7 @@ const signUp = catchAsync(async (req: any, res: any, next: NextFunction) => {
         passwordChangedAt: req.body.passwordChangedAt,
         role: req.body.role
     });
-    createSendToken(newUser._id.toString(), 201, res);
+    createSendToken(newUser, 201, res);
 });
 
 
@@ -46,7 +56,7 @@ const login = catchAsync(async (req: any, res: any, next: NextFunction) => {
         return next(new AppError('Incorrect email or password', 401));
     }
     // 3) If everthing is ok, send token to client
-    createSendToken(user._id.toString(), 200, res);
+    createSendToken(user, 200, res);
 })
 
 interface TokenPayload {
@@ -137,7 +147,7 @@ const resetPassword = catchAsync(async (req: any, res: any, next: NextFunction) 
     user.passwordResetExpires = undefined;
     await user.save();
     // 4) Log user in, send token
-    createSendToken(user._id.toString(), 200, res);
+    createSendToken(user, 200, res);
 });
 
 const updatePassword = catchAsync(async (req: any, res: any, next: NextFunction) => {
@@ -159,7 +169,7 @@ const updatePassword = catchAsync(async (req: any, res: any, next: NextFunction)
     await user.save();
     // 4) Log User in, send token
     const token = singnToken(user.id);
-    createSendToken(user.id, 200, res);
+    createSendToken(user, 200, res);
 })
 
 export { signUp, login, verfiyToken ,restrictTo, forgotPassword, resetPassword, updatePassword };

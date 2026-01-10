@@ -11,7 +11,7 @@ router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);
 router.patch('/updateMyPassword', verfiyToken, updatePassword);
 router.patch('/updateMe', verfiyToken, updateMe);
-router.delete('/deleteMe', verfiyToken, deleteMe)
+router.delete ('/deleteMe', verfiyToken, deleteMe)
 
 router.route('/').get(getAllUsers).post(createUser);
 router.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
