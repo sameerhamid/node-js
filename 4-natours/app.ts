@@ -1,7 +1,6 @@
-import fs from 'fs';
 import express from 'express';
 import morgan from 'morgan';
-import { Request, Response, NextFunction } from 'express';
+import reateLimit from 'express-rate-limit'
 import tourRouter from './src/routes/tourRoutes'
 import userRouter from './src/routes/userRoutes'
 import { AppError } from './src/utils/appError';
@@ -15,6 +14,15 @@ app.set('query parser', 'extended');
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
 }
+
+const limiter = reateLimit({
+    max: 1,
+    windowMs: 60 * 60 * 1000,
+    message: 'Too many request from this IP, please try again in an hour',
+});
+
+app.use('/api', limiter)
+
 app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
 
