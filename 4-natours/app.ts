@@ -2,6 +2,8 @@ import express from 'express';
 import morgan from 'morgan';
 import reateLimit from 'express-rate-limit';
 import helmet from 'helmet';
+import monogSanitize from 'express-mongo-sanitize';
+import { xss } from 'express-xss-sanitizer';
 import tourRouter from './src/routes/tourRoutes'
 import userRouter from './src/routes/userRoutes'
 import { AppError } from './src/utils/appError';
@@ -31,6 +33,12 @@ app.use('/api', limiter)
 
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
+
+// Data sanitization against NoSql query injection
+app.use(monogSanitize());
+
+// Date sanitization against XSS
+app.use(xss())
 
 // Serving static files
 app.use(express.static(`${__dirname}/public`));
