@@ -3,6 +3,7 @@ import morgan from 'morgan';
 import reateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import monogSanitize from 'express-mongo-sanitize';
+import hpp from 'hpp';
 import { xss } from 'express-xss-sanitizer';
 import tourRouter from './src/routes/tourRoutes'
 import userRouter from './src/routes/userRoutes'
@@ -35,10 +36,22 @@ app.use('/api', limiter)
 app.use(express.json({ limit: '10kb' }));
 
 // Data sanitization against NoSql query injection
-app.use(monogSanitize());
+// app.use(monogSanitize({ replaceWith: '_', onSanitize: ({ key }) => { }, allowDots: true }));
+
+app.use((req, res, next) => {
+    if (req.body) {
+        monogSanitize.sanitize(req.body);
+    }
+    next();
+})
 
 // Date sanitization against XSS
 app.use(xss())
+
+// Prevent parameter pollution
+app.use(hpp({
+    whitelist: ['ratingsAverage', 'ratingsQuanitity', 'duration', 'maxGroupSize', 'difficulty', 'price']
+}));
 
 // Serving static files
 app.use(express.static(`${__dirname}/public`));

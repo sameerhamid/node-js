@@ -19,6 +19,7 @@
     "express-rate-limit": "^8.2.1",
     "express-xss-sanitizer": "^2.0.1",
     "helmet": "^8.1.0",
+    "hpp": "^0.2.3",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.0.2",
     "morgan": "^1.10.1",
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/express-xss-sanitizer": "^2.0.0",
+    "@types/hpp": "^0.2.7",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/node": "^25.0.2",
