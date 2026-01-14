@@ -1,6 +1,7 @@
 import mongoose, { Query } from 'mongoose';
 import slugify from 'slugify';
 import validator from 'validator'
+import User from './userModel';
 
 const tourSchema = new mongoose.Schema({
     name: {
@@ -9,7 +10,7 @@ const tourSchema = new mongoose.Schema({
         unique: true,
         trim: true,
         maxlength: [40, 'A tour name must have less or equal than 40 chars'],
-        minlength: [10, 'A tour name must have more  or equal than 3 chars'],
+        minlength: [6, 'A tour name must have more  or equal than 6 chars'],
         // validate: [validator.isAlpha, 'Tour name must only contain characters'],
     },
     slug: {
@@ -95,7 +96,8 @@ const tourSchema = new mongoose.Schema({
         coordinates: [Number],
         address: String,
         description: String,
-    }
+    },
+    guides: Array
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 tourSchema.virtual('durationWeeks').get(function () {
@@ -114,6 +116,12 @@ tourSchema.pre('save', function () {
 tourSchema.post('save', function (doc, next) {
     // console.log(doc);
     next();
+})
+
+tourSchema.pre('save', async function () {
+    const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+    this.guides = await Promise.all(guidesPromises);
+    console.log("guides>>>>>>>>>>>", this.guides);
 })
 
 
