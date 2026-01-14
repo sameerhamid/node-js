@@ -1,7 +1,7 @@
 import mongoose, { Query } from 'mongoose';
 import slugify from 'slugify';
-import validator from 'validator'
-import User from './userModel';
+// import validator from 'validator'
+// import User from './userModel';
 
 const tourSchema = new mongoose.Schema({
     name: {
@@ -97,7 +97,12 @@ const tourSchema = new mongoose.Schema({
         address: String,
         description: String,
     },
-    guides: Array
+    guides: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: 'User'
+        }
+    ]
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 tourSchema.virtual('durationWeeks').get(function () {
@@ -118,11 +123,10 @@ tourSchema.post('save', function (doc, next) {
     next();
 })
 
-tourSchema.pre('save', async function () {
-    const guidesPromises = this.guides.map(async (id) => await User.findById(id));
-    this.guides = await Promise.all(guidesPromises);
-    console.log("guides>>>>>>>>>>>", this.guides);
-})
+// tourSchema.pre('save', async function () {
+//     const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+//     this.guides = await Promise.all(guidesPromises);
+// })
 
 
 // 2. QUERY MIDELEWAR -
