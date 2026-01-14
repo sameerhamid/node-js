@@ -139,6 +139,13 @@ interface QueryWithStart<T> extends Query<any, T> {
 //     this.find({ secretTour: { $ne: true}});
 // })
 
+tourSchema.pre(/^find/, function (this: Query<any, any>) {
+    this.populate({
+        path: 'guides',
+        select: '-__v -passwordChangedAt'
+    })
+})
+
 tourSchema.post<QueryWithStart<any>>(/^find/, function (docs, next) {
     console.log(`Query took ${Date.now() - this.start!} milliseconds`);
     next();
