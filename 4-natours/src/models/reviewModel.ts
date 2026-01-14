@@ -1,4 +1,4 @@
-import mongoose, { Model } from "mongoose";
+import mongoose, { Query } from "mongoose";
 
 const reviewSchema = new mongoose.Schema({
     review: {
@@ -24,6 +24,16 @@ const reviewSchema = new mongoose.Schema({
         required: [true, 'Review must belong to a user.']
     }
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
+
+reviewSchema.pre(/^find/, function (this: Query<any, any>) {
+    this.populate({
+        path: 'tour',
+        select: 'name'
+    }).populate({
+        path: 'user',
+        select: 'name photo'
+    })
+});
 
 const Review = mongoose.model('Review', reviewSchema);
 
