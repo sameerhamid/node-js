@@ -7,6 +7,7 @@ import hpp from 'hpp';
 import { xss } from 'express-xss-sanitizer';
 import tourRouter from './src/routes/tourRoutes'
 import userRouter from './src/routes/userRoutes'
+import reviewRouter from './src/routes/reviewRoutes'
 import { AppError } from './src/utils/appError';
 import globalErrorController from './src/controllers/errorController';
 
@@ -67,6 +68,7 @@ app.use((req: any, res, next) => {
 
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 app.use((req, res, next)=>{
     // res.status(404).json({
