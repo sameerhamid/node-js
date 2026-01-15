@@ -26,10 +26,10 @@ const reviewSchema = new mongoose.Schema({
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 reviewSchema.pre(/^find/, function (this: Query<any, any>) {
-    this.populate({
+    this/*.populate({
         path: 'tour',
         select: 'name'
-    }).populate({
+    })*/.populate({
         path: 'user',
         select: 'name photo'
     })
