@@ -2,6 +2,7 @@ import express from 'express';
 import {getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, deleteMe} from '../controllers/userController';
 import { forgotPassword, login, resetPassword, signUp, updatePassword, verfiyToken } from '../controllers/authController';
 
+
 const router = express.Router();
 
 router.post('/signup', signUp);
