@@ -1,9 +1,10 @@
 import express from 'express';
-import { verfiyToken } from '../controllers/authController';
+import { restrictTo, verfiyToken } from '../controllers/authController';
 import { createReview, getAll } from '../controllers/reviewController';
+import { EUserRole } from '../models/userModel';
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
-router.route('/').get(getAll).post(verfiyToken, createReview);
+router.route('/').get(getAll).post(verfiyToken, restrictTo([EUserRole.USER]), createReview);
 
 export default router;
