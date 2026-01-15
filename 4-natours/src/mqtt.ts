@@ -7,6 +7,10 @@ type SubscriptionCallback = (topic: string, message: string) => any;
 
 const WILDCARD = '/#';
 
+const getClientId = () =>{
+    return ''
+}
+
 class MQTT {
     public initialConnectionSuccessful = false;
     private client: MqttClient;
@@ -17,7 +21,7 @@ class MQTT {
         const link = "";
         const username = "";
         const password = "";
-        this.client = connect(link, { username, password, clientId: '' });
+        this.client = connect(link, { username, password, clientId: getClientId() });
         this.client.on('connect', this.onConnect);
         this.client.on('message', this.onMessageReceived);
     }
