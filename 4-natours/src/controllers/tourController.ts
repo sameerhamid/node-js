@@ -3,6 +3,7 @@ import { NextFunction } from 'express'
 import APIFreatures from '../utils/apiFeatures';
 import catchAsync from '../utils/catchAsync';
 import { AppError } from '../utils/appError';
+import { deletOne } from './handlerFactory';
 
 // const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`).toString()) as [any];
 
@@ -60,16 +61,7 @@ const updateTour = catchAsync(async (req: any, res: any, next: NextFunction) => 
 	});
 });
 
-const deletTour = catchAsync(async (req: any, res: any, next: NextFunction) => {
-	const tour = await Tour.findByIdAndDelete(req.params.id);
-	if(!tour){
-		return next(new AppError('No tour found with that ID', 404));
-	};
-	res.status(204).json({
-		status: 'success',
-		data: null,
-	})
-});
+const deletTour = deletOne(Tour);
 
 const getTourStats = catchAsync(async (req: any, res: any) => {
 	const stats = await Tour.aggregate([

@@ -3,6 +3,7 @@ import {users} from '../../dev-data'
 import User from '../models/userModel';
 import catchAsync from '../utils/catchAsync';
 import { AppError } from '../utils/appError';
+import { deletOne } from './handlerFactory';
 
 const filterObj = (obj: Record<string, any>, ...allowedFields: string[]) => {
     const newObj: Record<string, any> = {};
@@ -73,12 +74,6 @@ const updateUser = (req: any, res: any) => {
     })
 }
 
-const deleteUser = (req: any, res: any) => {
-    res.status(500).json({
-        status: 'error',
-        message: 'This route is not yet defined'
-    })
-}
-
+const deleteUser = deletOne(User)
 
 export { getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, deleteMe }

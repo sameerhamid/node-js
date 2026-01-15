@@ -1,6 +1,7 @@
 import { NextFunction } from "express";
 import catchAsync from "../utils/catchAsync";
 import Review from "../models/reviewModel";
+import { deletOne } from "./handlerFactory";
 
 const createReview = catchAsync(async (req: any, res: any, next: NextFunction) => {
     // Allow nested routes
@@ -40,4 +41,6 @@ const getAll = catchAsync(async (req: any, res: any, next: NextFunction) => {
     })
 })
 
-export { createReview, getAll };
+const deletReview = deletOne(Review);
+
+export { createReview, getAll, deletReview };
