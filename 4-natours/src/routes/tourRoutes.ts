@@ -15,7 +15,7 @@ router.route('/stats').get(getTourStats);
 router.route('/monthly-plan/:year').get(getMonthlyPlan);
 
 router.route('/').get(getAllTours).post(createTour);
-router.route('/:id').get(getTour).patch(updateTour).delete(restrictTo([EUserRole.ADMIN, EUserRole.LEAD_GUIDE]), deletTour);
+router.route('/:id').get(getTour).patch(verfiyToken, updateTour).delete(restrictTo([EUserRole.ADMIN, EUserRole.LEAD_GUIDE]), deletTour);
 
 
 export default router;

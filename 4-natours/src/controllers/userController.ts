@@ -3,7 +3,7 @@ import {users} from '../../dev-data'
 import User from '../models/userModel';
 import catchAsync from '../utils/catchAsync';
 import { AppError } from '../utils/appError';
-import { deletOne } from './handlerFactory';
+import { deletOne, updateOne } from './handlerFactory';
 
 const filterObj = (obj: Record<string, any>, ...allowedFields: string[]) => {
     const newObj: Record<string, any> = {};
@@ -67,13 +67,8 @@ const getUser = (req: any, res: any) => {
     })
 }
 
-const updateUser = (req: any, res: any) => {
-    res.status(500).json({
-        status: 'error',
-        message: 'This route is not yet defined'
-    })
-}
-
+// Don Not update passwords with this
+const updateUser = updateOne(User);
 const deleteUser = deletOne(User)
 
 export { getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, deleteMe }
