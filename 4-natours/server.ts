@@ -7,8 +7,10 @@ import mqttClient from './src/mqtt';
 const PORT = process.env.PORT || 3000;
 const MONOGDB_URL = process.env.MONOGDB_URL ?? "";
 
+// for import
+mqttClient;
+
 process.on('uncaughtException', ((err: any) => {
-    mqttClient.log();
     console.log("UNCAUGTH EXCEPTION! 🔥 SHUTTING DOWN...")
     console.log(err.name, err.message);
     process.exit(1);
