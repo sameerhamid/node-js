@@ -7,8 +7,8 @@ type SubscriptionCallback = (topic: string, message: string) => any;
 
 const WILDCARD = '/#';
 
-const getClientId = () =>{
-    return ''
+const getClientId = () => {
+    return 'my-client-id'
 }
 
 class MQTT {
@@ -18,12 +18,16 @@ class MQTT {
     private wildCardSubscribers = new Set<string>();
 
     constructor() {
-        const link = "";
-        const username = "";
-        const password = "";
+        const link = process.env.MQTT_LINK!;
+        const username = process.env.MQTT_USERNAME!;
+        const password = process.env.MQTT_PASSWORD!;
         this.client = connect(link, { username, password, clientId: getClientId() });
         this.client.on('connect', this.onConnect);
         this.client.on('message', this.onMessageReceived);
+    }
+
+    public log = () => {
+        console.log("i am logging")
     }
 
     public publish = (topic: string, message: string, opts?: IClientPublishOptions) => {
