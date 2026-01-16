@@ -3,7 +3,7 @@ import { NextFunction } from 'express'
 import APIFreatures from '../utils/apiFeatures';
 import catchAsync from '../utils/catchAsync';
 import { AppError } from '../utils/appError';
-import { deletOne, updateOne } from './handlerFactory';
+import { createOne, deletOne, updateOne } from './handlerFactory';
 
 // const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`).toString()) as [any];
 
@@ -40,16 +40,7 @@ const getTour = catchAsync(async (req: any, res: any, next: NextFunction) => {
 	})
 });
 
-const createTour = catchAsync(async (req: any, res: any) => {
-	const newTour = await Tour.create(req.body);
-	res.status(201).json({
-		status: 'success',
-		data: {
-			tour: newTour
-		}
-	});
-});
-
+const createTour = createOne(Tour);
 const updateTour = updateOne(Tour);
 const deletTour = deletOne(Tour);
 

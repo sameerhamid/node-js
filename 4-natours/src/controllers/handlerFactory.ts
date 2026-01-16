@@ -15,8 +15,6 @@ const deletOne = (Model: Model<any>) => catchAsync(async (req: any, res: any, ne
 });
 
 const updateOne = (Model: Model<any>) => catchAsync(async (req: any, res: any, next: NextFunction) => {
-    console.log("req.id", req.params.id)
-    console.log("req.body", req.body)
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!doc) {
         return next(new AppError('No document found with that ID', 404));
@@ -27,4 +25,15 @@ const updateOne = (Model: Model<any>) => catchAsync(async (req: any, res: any, n
     });
 });
 
-export { deletOne, updateOne }
+const createOne = (Model: Model<any>) => catchAsync(async (req: any, res: any, next: NextFunction) => {
+    const doc = await Model.create(req.body);
+    res.status(201).json({
+        status: 'success',
+        message: 'Document created successfull!',
+        data: {
+            data: doc
+        }
+    });
+});
+
+export { deletOne, updateOne, createOne }

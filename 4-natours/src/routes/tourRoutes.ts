@@ -2,7 +2,6 @@ import express from 'express';
 import {getAllTours, createTour, getTour, updateTour, deletTour, aliasTopTours, getTourStats, getMonthlyPlan} from '../controllers/tourController'
 import { restrictTo, verfiyToken } from '../controllers/authController';
 import { EUserRole } from '../models/userModel';
-import { createReview } from '../controllers/reviewController';
 import reviewRouter from './reviewRoutes'
 
 const router = express.Router()
