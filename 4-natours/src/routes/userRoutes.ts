@@ -1,5 +1,5 @@
 import express from 'express';
-import {getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, deleteMe} from '../controllers/userController';
+import {getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, deleteMe, getMe} from '../controllers/userController';
 import { forgotPassword, login, resetPassword, restrictTo, signUp, updatePassword, verfiyToken } from '../controllers/authController';
 import { EUserRole } from '../models/userModel';
 
@@ -12,6 +12,7 @@ router.post('/login', login)
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);
 router.patch('/updateMyPassword', verfiyToken, updatePassword);
+router.get('/me', verfiyToken, getMe, getUser);
 router.patch('/updateMe', verfiyToken, updateMe);
 router.delete ('/deleteMe', verfiyToken,  deleteMe)
 

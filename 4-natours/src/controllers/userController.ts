@@ -14,6 +14,10 @@ const filterObj = (obj: Record<string, any>, ...allowedFields: string[]) => {
     return newObj;
 }
 
+const getMe = (req: any, res: any, next: NextFunction) => {
+    req.params.id = req.user._id;
+    next();
+}
 
 const updateMe = catchAsync(async (req: any, res: any, next: NextFunction) => {
     // 1) Create error if user POSTs password Data
@@ -55,4 +59,4 @@ const getUser = getOne(User);
 const updateUser = updateOne(User);
 const deleteUser = deletOne(User)
 
-export { getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, deleteMe }
+export { getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, deleteMe, getMe }
