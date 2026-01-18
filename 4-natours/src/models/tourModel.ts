@@ -105,6 +105,9 @@ const tourSchema = new mongoose.Schema({
     ]
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
+// tourSchema.index({ price: 1 });
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
 tourSchema.virtual('durationWeeks').get(function () {
     return this.duration / 7;
 })
@@ -113,7 +116,7 @@ tourSchema.virtual('durationWeeks').get(function () {
 tourSchema.virtual('reviews', {
     ref: 'Review',
     foreignField: 'tour',
-    localField: '_id',
+    localField: '_id' ,
 })
 
 // 1) DOCUMENT MIDDLEWARE - Runs before .save() and .create()
