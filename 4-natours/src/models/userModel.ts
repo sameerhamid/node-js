@@ -4,10 +4,10 @@ import validator from 'validator';
 import bcrypt from 'bcryptjs';
 
 export enum EUserRole {
-    USER = 'USER',
-    GUIDE = 'GUIDE',
-    LEAD_GUIDE = 'LEAD_GUIDE',
-    ADMIN = 'ADMIN'
+    USER = 'user',
+    GUIDE = 'guide',
+    LEAD_GUIDE = 'lead-guide',
+    ADMIN = 'admin'
 }
 
 export interface IUser extends Document {
