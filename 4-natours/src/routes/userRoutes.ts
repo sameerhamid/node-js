@@ -11,13 +11,17 @@ router.post('/login', login)
 
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);
-router.patch('/updateMyPassword', verfiyToken, updatePassword);
-router.get('/me', verfiyToken, getMe, getUser);
-router.patch('/updateMe', verfiyToken, updateMe);
-router.delete ('/deleteMe', verfiyToken,  deleteMe)
 
+// Protects all routes after this middleware
+router.use(verfiyToken);
+router.patch('/updateMyPassword', updatePassword);
+router.get('/me', getMe, getUser);
+router.patch('/updateMe', updateMe);
+router.delete('/deleteMe', deleteMe)
+
+router.use(restrictTo([EUserRole.ADMIN]));
 router.route('/').get(getAllUsers).post(createUser);
-router.route('/:id').get(getUser).patch(updateUser).delete(verfiyToken, restrictTo([EUserRole.ADMIN]), deleteUser);
+router.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
 
 
 export default router;

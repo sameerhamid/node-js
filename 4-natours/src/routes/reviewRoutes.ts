@@ -5,8 +5,9 @@ import { EUserRole } from '../models/userModel';
 
 const router = express.Router({ mergeParams: true });
 
-router.route('/').get(getAllReview).post(verfiyToken, restrictTo([EUserRole.USER]), setTourAndUserIds, createReview);
+router.use(verfiyToken);
+router.route('/').get(getAllReview).post(restrictTo([EUserRole.USER]), setTourAndUserIds, createReview);
 
-router.route('/:id').get(verfiyToken, getReivew).patch(verfiyToken, restrictTo([EUserRole.USER]), updateReview).delete(verfiyToken, restrictTo([EUserRole.USER]), deletReview);
+router.route('/:id').get(getReivew).patch(restrictTo([EUserRole.USER, EUserRole.ADMIN]), updateReview).delete(restrictTo([EUserRole.USER, EUserRole.ADMIN]), deletReview);
 
 export default router;

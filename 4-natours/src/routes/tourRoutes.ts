@@ -6,15 +6,14 @@ import reviewRouter from './reviewRoutes'
 
 const router = express.Router()
 
-router.use(verfiyToken);
 router.use('/:tourId/reviews', reviewRouter)
 
 router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
 router.route('/stats').get(getTourStats);
-router.route('/monthly-plan/:year').get(getMonthlyPlan);
+router.route('/monthly-plan/:year').get(restrictTo([EUserRole.ADMIN, EUserRole.LEAD_GUIDE, EUserRole.GUIDE]), getMonthlyPlan);
 
-router.route('/').get(getAllTours).post(createTour);
-router.route('/:id').get(getTour).patch(verfiyToken, updateTour).delete(restrictTo([EUserRole.ADMIN, EUserRole.LEAD_GUIDE]), deletTour);
+router.route('/').get(getAllTours).post(verfiyToken, restrictTo([EUserRole.ADMIN, EUserRole.LEAD_GUIDE]), createTour);
+router.route('/:id').get(getTour).patch(verfiyToken, restrictTo([EUserRole.ADMIN, EUserRole.LEAD_GUIDE]), updateTour).delete(restrictTo([EUserRole.ADMIN, EUserRole.LEAD_GUIDE]), deletTour);
 
 
 export default router;
