@@ -1,7 +1,7 @@
 import { NextFunction } from "express";
 import catchAsync from "../utils/catchAsync";
 import Review from "../models/reviewModel";
-import { createOne, deletOne, updateOne } from "./handlerFactory";
+import { createOne, deletOne, getAll, getOne, updateOne } from "./handlerFactory";
 
 
 const setTourAndUserIds = (req: any, res: any, next: NextFunction) => {
@@ -15,23 +15,10 @@ const setTourAndUserIds = (req: any, res: any, next: NextFunction) => {
 }
 
 
-const getAll = catchAsync(async (req: any, res: any, next: NextFunction) => {
-    let filter = {}
-    if (req.params.tourId) {
-        filter = { tour: req.params.tourId }
-    }
-    const reviews = await Review.find(filter);
-
-    res.status(200).json({
-        status: 'success',
-        data: {
-            reviews
-        }
-    })
-})
-
+const getAllReview = getAll(Review);
+const getReivew = getOne(Review);
 const createReview = createOne(Review);
 const updateReview = updateOne(Review);
 const deletReview = deletOne(Review);
 
-export { createReview, getAll, deletReview, updateReview, setTourAndUserIds };
+export { createReview, getAllReview, deletReview, updateReview, setTourAndUserIds, getReivew };

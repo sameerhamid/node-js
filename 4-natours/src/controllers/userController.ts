@@ -1,9 +1,8 @@
 import { NextFunction } from 'express';
-import {users} from '../../dev-data'
 import User from '../models/userModel';
 import catchAsync from '../utils/catchAsync';
 import { AppError } from '../utils/appError';
-import { deletOne, updateOne } from './handlerFactory';
+import { deletOne, getAll, getOne, updateOne } from './handlerFactory';
 
 const filterObj = (obj: Record<string, any>, ...allowedFields: string[]) => {
     const newObj: Record<string, any> = {};
@@ -15,16 +14,6 @@ const filterObj = (obj: Record<string, any>, ...allowedFields: string[]) => {
     return newObj;
 }
 
-const getAllUsers = catchAsync(async (req: any, res: any) => {
-    const users = await User.find();
-    // --------------- SEND RESPONSE
-    res.status(200).json({
-        status: 'success',
-        requestedAt: req.requestTime,
-        results: users?.length ?? 0,
-        data: { users },
-    })
-})
 
 const updateMe = catchAsync(async (req: any, res: any, next: NextFunction) => {
     // 1) Create error if user POSTs password Data
@@ -56,17 +45,12 @@ const deleteMe = catchAsync(async (req: any, res: any, next: NextFunction) => {
 const createUser = (req: any, res: any) => {
     res.status(500).json({
         status: 'error',
-        message: 'This route is not yet defined'
+        message: 'This route is not defined! Please use signup instead.'
     })
 }
 
-const getUser = (req: any, res: any) => {
-    res.status(500).json({
-        status: 'error',
-        message: 'This route is not yet defined'
-    })
-}
-
+const getAllUsers = getAll(User);
+const getUser = getOne(User);
 // Don Not update passwords with this
 const updateUser = updateOne(User);
 const deleteUser = deletOne(User)

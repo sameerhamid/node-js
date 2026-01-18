@@ -1,9 +1,7 @@
 import Tour from './../models/tourModel';
 import { NextFunction } from 'express'
-import APIFreatures from '../utils/apiFeatures';
 import catchAsync from '../utils/catchAsync';
-import { AppError } from '../utils/appError';
-import { createOne, deletOne, updateOne } from './handlerFactory';
+import { createOne, deletOne, getAll, getOne, updateOne } from './handlerFactory';
 
 // const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`).toString()) as [any];
 
@@ -15,31 +13,8 @@ const aliasTopTours = async (req: any, res: any, next: NextFunction) => {
 }
 
 
-const getAllTours = catchAsync(async (req: any, res: any,) => {
-	//---------------- EXICUTE THE QUERY
-	const features = new APIFreatures(Tour.find(), req.query).filter().sort().limitFields().paginate();
-	const tours = await features.query;
-
-	// --------------- SEND RESPONSE
-	res.status(200).json({
-		status: 'success',
-		requestedAt: req.requestTime,
-		results: tours?.length ?? 0,
-		data: { tours },
-	})
-});
-
-const getTour = catchAsync(async (req: any, res: any, next: NextFunction) => {
-	const tour = await Tour.findById(req.params.id).populate('reviews');
-	if(!tour){
-		return next(new AppError('No tour found with that ID', 404));
-	};
-	res.status(200).json({
-		status: 'success',
-		data: { tour },
-	})
-});
-
+const getAllTours = getAll(Tour);
+const getTour = getOne(Tour, { path: 'reviews' });
 const createTour = createOne(Tour);
 const updateTour = updateOne(Tour);
 const deletTour = deletOne(Tour);
