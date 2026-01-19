@@ -2,6 +2,7 @@ import Tour from './../models/tourModel';
 import { NextFunction } from 'express'
 import catchAsync from '../utils/catchAsync';
 import { createOne, deletOne, getAll, getOne, updateOne } from './handlerFactory';
+import { AppError } from '../utils/appError';
 
 // const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`).toString()) as [any];
 
@@ -89,4 +90,24 @@ const getMonthlyPlan = catchAsync(async (req: any, res: any) => {
 	})
 });
 
-export { getAllTours, getTour, createTour, updateTour, deletTour, aliasTopTours, getTourStats, getMonthlyPlan };
+const getToursWithin = catchAsync(async (req: any, res: any, next: NextFunction) => {
+	// tours-within/:distance/center/:latlng/unit/:unit
+	const { distance, latlng, unit } = req.params;
+	const [lat, lng] = latlng.split(',');
+	const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+	console.log(lat, lng)
+	if (!lat || !lng) {
+		next(new AppError('Please provide latitude and longititue in the format of lat,lng.', 400))
+	}
+	console.log(distance, latlng, unit);
+	const tours = await Tour.find({ startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } } })
+	res.status(200).json({
+		status: 'success',
+		results: tours.length,
+		data: {
+			data: tours
+		}
+	})
+})
+
+export { getAllTours, getTour, createTour, updateTour, deletTour, aliasTopTours, getTourStats, getMonthlyPlan, getToursWithin };
