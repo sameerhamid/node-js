@@ -3,15 +3,16 @@ import Tour from "./tourModel";
 
 /** Review document */
 interface IReview {
-  review: string;
-  rating: number;
-  tour: Types.ObjectId;
-  user: Types.ObjectId;
+    review: string;
+    rating: number;
+    tour: Types.ObjectId;
+    user: Types.ObjectId;
+    r?: any
 }
 
 /** Review model (statics go here) */
 interface ReviewModel extends Model<IReview> {
-  calAverageRatings(tourId: Types.ObjectId): Promise<void>;
+    calAverageRatings(tourId: Types.ObjectId): Promise<void>;
 }
 
 const reviewSchema = new mongoose.Schema({
@@ -62,17 +63,37 @@ reviewSchema.statics.calAverageRatings = async function (tourId: string) {
             }
         }
     ]);
-    await Tour.findByIdAndUpdate(tourId, {
-        ratingsAverage: statts[0].avgRating,
-        ratingsQuanitity: statts[0].nRatings,
-    })
+    if (statts.length > 0) {
+        await Tour.findByIdAndUpdate(tourId, {
+            ratingsAverage: statts[0].avgRating,
+            ratingsQuanitity: statts[0].nRatings,
+        })
+    } else {
+        await Tour.findByIdAndUpdate(tourId, {
+            ratingsAverage: 4.5,
+            ratingsQuanitity: 0,
+        })
+    }
 }
 
-reviewSchema.post('save', function(){
+reviewSchema.post('save', function () {
     // this points to current review
     const ReviewModel = this.constructor as ReviewModel;
     ReviewModel.calAverageRatings(this.tour);
 })
+
+reviewSchema.pre(/^findOneAnd/, async function (this: Query<any, any>) {
+    (this as any)._review = await this.model.findOne(this.getQuery());
+})
+
+reviewSchema.post(/^findOneAnd/, async function () {
+    const review = (this as any)._review as IReview | null;
+    if (!review) return;
+
+    const ReviewModel = this.model as ReviewModel;
+    await ReviewModel.calAverageRatings(review.tour);
+})
+
 
 const Review = mongoose.model<IReview, ReviewModel>('Review', reviewSchema);
 
