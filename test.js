@@ -34,8 +34,16 @@ const createCounter = () =>{
 // console.log(double(3))
 
 
-for (var i = 1; i <= 3; i++) {
-  setTimeout(() => {
-    console.log(i);
-  }, 1000);
+// for (var i = 1; i <= 3; i++) {
+//     setTimeout(() => {
+//         console.log(i);
+//     }, 1000);
+// }
+
+
+function factorial(n) {
+    if (n === 1 || n === 0) return 1;
+    return n * factorial(n-1);
 }
+
+console.log(factorial(5));
