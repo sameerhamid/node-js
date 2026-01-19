@@ -1,3 +1,4 @@
+import path from 'path';
 import express from 'express';
 import morgan from 'morgan';
 import reateLimit from 'express-rate-limit';
@@ -12,6 +13,13 @@ import { AppError } from './src/utils/appError';
 import globalErrorController from './src/controllers/errorController';
 
 const app = express();
+
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'src/views'));
+
+// Serving static files
+app.use(express.static(path.join(__dirname, 'public')));
+
 const PORT = 3000;
 app.set('query parser', 'extended');
 // 1) -------------- MIDDLEWARES ----------
@@ -55,9 +63,6 @@ app.use(hpp({
     whitelist: ['ratingsAverage', 'ratingsQuanitity', 'duration', 'maxGroupSize', 'difficulty', 'price']
 }));
 
-// Serving static files
-app.use(express.static(`${__dirname}/public`));
-
 
 // Test middleware
 app.use((req: any, res, next) => {
@@ -66,6 +71,10 @@ app.use((req: any, res, next) => {
 })
 
 // 3) -------------- ROUTES ----------
+
+app.get('/', (req, res) =>{
+    res.status(200).render('base');
+})
 
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
