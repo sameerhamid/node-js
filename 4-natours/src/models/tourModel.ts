@@ -165,11 +165,11 @@ tourSchema.post<QueryWithStart<any>>(/^find/, function (docs, next) {
 
 //3. AGGRIGATION MIDDLEWAR --------
 
-tourSchema.pre('aggregate', function () {
-    this.pipeline().unshift({
-        $match: { secretTour: { $ne: true } }
-    })
-})
+// tourSchema.pre('aggregate', function () {
+//     this.pipeline().unshift({
+//         $match: { secretTour: { $ne: true } }
+//     })
+// })
 
 const Tour = mongoose.model('Tour', tourSchema);
 export default Tour;
