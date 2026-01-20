@@ -9,6 +9,7 @@ import { xss } from 'express-xss-sanitizer';
 import tourRouter from './src/routes/tourRoutes'
 import userRouter from './src/routes/userRoutes'
 import reviewRouter from './src/routes/reviewRoutes'
+import viewRoutes from './src/routes/viewRoutes'
 import { AppError } from './src/utils/appError';
 import globalErrorController from './src/controllers/errorController';
 
@@ -72,25 +73,7 @@ app.use((req: any, res, next) => {
 
 // 3) -------------- ROUTES ----------
 
-app.get('/', (req, res) =>{
-    res.status(200).render('base', {
-        tour: 'The forest hicker',
-        user: 'Sameer'
-    });
-})
-
-app.get('/overview', (req, res) => {
-     res.status(200).render('overview', {
-        title: 'All Tours'
-    });
-})
-
-app.get('/tour', (req, res) => {
-     res.status(200).render('tour', {
-        title: 'The forest hicker'
-    });
-})
-
+app.use('/', viewRoutes);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
