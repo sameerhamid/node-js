@@ -40,7 +40,7 @@ const tourSchema = new mongoose.Schema({
         max: [5, 'Rating must be bellow 5.0'],
         set: (val: any) => Math.round(val * 10) / 10,
     },
-    ratingsQuanitity: {
+    ratingsQuantity: {
         type: Number,
         default: 0
     },
@@ -88,7 +88,7 @@ const tourSchema = new mongoose.Schema({
         address: String,
         description: String,
     },
-    locations: {
+    locations: [{
         type: {
             type: String,
             default: 'Point',
@@ -97,7 +97,7 @@ const tourSchema = new mongoose.Schema({
         coordinates: [Number],
         address: String,
         description: String,
-    },
+    }],
     guides: [
         {
             type: mongoose.Schema.ObjectId,
