@@ -6,7 +6,7 @@ import Review from '../../src/models/reviewModel';
 import User from '../../src/models/userModel';
 
 dotenv.config({ path: './config.env' });
-const MONOGDB_URL = "mongodb+srv://codewithsamiir_db_user:9Hu6rTCx992jUHFM@cluster0.caquqyi.mongodb.net/natours"
+const MONOGDB_URL = ""
 
 mongoose.connect(MONOGDB_URL).then(_con => {
     // console.log(con.connections);
