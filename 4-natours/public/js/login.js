@@ -27,3 +27,20 @@ export const login = async (email, password) => {
         showAlert("error", error?.response?.data.message ?? "Error while logging user");
     }
 }
+
+
+export const logout = async () => {
+    try {
+        const res = await axios({
+            method: 'GET',
+            url: '/api/v1/users/logout',
+        });
+        if(res?.data?.status === 'success'){
+            showAlert('success', 'Logged out successfull!');
+            location.reload(true);
+        }
+    } catch (error) {
+        console.log("error while logging out>>", error);
+        showAlert('error', 'Error logging out! try again later');
+    }
+}
