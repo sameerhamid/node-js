@@ -9,9 +9,13 @@
     "start": "node dist/app.js",
     "build": "tsc",
     "prod": "NODE_ENV=production nodemon",
-    "debug": "node --inspect-brk --inspect-publish-uid=http -r ts-node/register server.ts"
+    "debug": "node --inspect-brk --inspect-publish-uid=http -r ts-node/register server.ts",
+    "watch:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js",
+    "build:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js"
   },
   "dependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
@@ -48,6 +52,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react": "^7.37.5",
     "nodemon": "^3.1.11",
+    "parcel-bundler": "^1.12.5",
     "prettier": "^3.7.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
