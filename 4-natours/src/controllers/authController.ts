@@ -92,6 +92,29 @@ const verfiyToken = catchAsync(async (req: any, res: any, next: NextFunction) =>
     next();
 })
 
+
+// Only for rendered pages, no errors!
+const isLoggedIn = catchAsync(async (req: any, res: any, next: NextFunction) => {
+    if (req?.cookies?.jwt) {
+        // 1) Verfication token
+        const decoded = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET!) as TokenPayload;
+        // 3) Check if user still exists
+        const user = await User.findById(decoded.userId);
+        if (!user) {
+            return next();
+        }
+        // 4) Check if user changed password after token was issued
+        if (user?.changePasswordAfter(decoded.iat)) {
+            return next();
+        }
+        // THERE IS A LOGGED IN USER
+        res.locals.user = user
+        return next();
+    }
+    next();
+})
+
+
 const restrictTo = (roles: EUserRole[]) =>{
     return (req: any, res: any, next: NextFunction) =>{
         if(!roles.includes(req.user.role)){
@@ -174,4 +197,4 @@ const updatePassword = catchAsync(async (req: any, res: any, next: NextFunction)
     createSendToken(user, 200, res);
 })
 
-export { signUp, login, verfiyToken ,restrictTo, forgotPassword, resetPassword, updatePassword };
+export { signUp, login, verfiyToken ,restrictTo, forgotPassword, resetPassword, updatePassword, isLoggedIn };
