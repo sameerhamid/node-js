@@ -1,5 +1,6 @@
 {
-  "watch": ["*"],
+  "watch": ["src"],
   "ext": "ts",
+  "ignore": ["public", "dist", "node_modules"],
   "exec": "ts-node server.ts"
 }
