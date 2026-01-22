@@ -5,6 +5,7 @@ import reateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import monogSanitize from 'express-mongo-sanitize';
 import hpp from 'hpp';
+import cookieParser from 'cookie-parser';
 import { xss } from 'express-xss-sanitizer';
 import tourRouter from './src/routes/tourRoutes'
 import userRouter from './src/routes/userRoutes'
@@ -26,7 +27,19 @@ app.set('query parser', 'extended');
 // 1) -------------- MIDDLEWARES ----------
 
 // Set Security http headers
-app.use(helmet());
+// app.use(helmet());
+
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      connectSrc: ["'self'", "http://127.0.0.1:3000"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https:"],
+      imgSrc: ["'self'", "data:", "https:"]
+    }
+  })
+);
 
 
 // Development logging
@@ -45,6 +58,7 @@ app.use('/api', limiter)
 
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
+app.use(cookieParser())
 
 // Data sanitization against NoSql query injection
 // app.use(monogSanitize({ replaceWith: '_', onSanitize: ({ key }) => { }, allowDots: true }));
@@ -68,6 +82,7 @@ app.use(hpp({
 // Test middleware
 app.use((req: any, res, next) => {
     req.requestTime = new Date().toISOString();
+    console.log(req.cookies);
     next();
 })
 
