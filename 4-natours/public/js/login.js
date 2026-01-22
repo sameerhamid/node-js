@@ -21,10 +21,14 @@ const login = async (email, password) =>{
         });
 
         const data = await res.json(); // 👈 REQUIRED
-
-        console.log("response>>>>>", data);
+        if(data?.status === 'success'){
+            alert('Logged in successfull!');
+            window.setTimeout(() => {
+                location.assign('/');
+            }, 1000);
+        }
     } catch (error) {
-        console.log('error>>>>>', error)
+        alert(error?.response?.data.message ?? "Error while logging user");
     }
 
 }
