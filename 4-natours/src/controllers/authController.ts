@@ -88,6 +88,7 @@ const verfiyToken = catchAsync(async (req: any, res: any, next: NextFunction) =>
         return next(new AppError('User recently changed password! Please login agian.', 401));
     }
     // GRANT ACCESS TO PROTECTED ROUTE
+    res.locals.user = user
     req.user = user
     next();
 })
