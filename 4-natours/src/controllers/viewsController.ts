@@ -41,4 +41,10 @@ const login = catchAsync(async (req: any, res: any) => {
     });
 })
 
-export { getOverview, getTour, login }
+const getAccount = catchAsync(async (req: any, res: any) =>{
+    res.status(200).render('account', {
+
+    })
+})
+
+export { getOverview, getTour, login, getAccount }
