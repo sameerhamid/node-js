@@ -19,6 +19,6 @@ export const updateSettings = async (name, email) => {
             location.reload();
         }
     } catch (error) {
-        showAlert("error", error?.response?.data.message ?? "Error while update user data");
+        showAlert("error", error?.response?.data.message ?? "Error while updating data");
     }
 }

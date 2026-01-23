@@ -12897,7 +12897,7 @@ var updateSettings = exports.updateSettings = /*#__PURE__*/function () {
         case 2:
           _context.p = 2;
           _t = _context.v;
-          (0, _alerts.showAlert)("error", (_error$response$data$ = _t === null || _t === void 0 || (_error$response = _t.response) === null || _error$response === void 0 ? void 0 : _error$response.data.message) !== null && _error$response$data$ !== void 0 ? _error$response$data$ : "Error while update user data");
+          (0, _alerts.showAlert)("error", (_error$response$data$ = _t === null || _t === void 0 || (_error$response = _t.response) === null || _error$response === void 0 ? void 0 : _error$response.data.message) !== null && _error$response$data$ !== void 0 ? _error$response$data$ : "Error while updating data");
         case 3:
           return _context.a(2);
       }
