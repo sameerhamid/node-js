@@ -2,6 +2,7 @@ import { NextFunction } from "express";
 import Tour from "../models/tourModel";
 import { AppError } from "../utils/appError";
 import catchAsync from "../utils/catchAsync";
+import User from "../models/userModel";
 
 const getOverview = catchAsync(async (req: any, res: any) => {
     // 1) Get tour data from collection
@@ -43,8 +44,22 @@ const login = catchAsync(async (req: any, res: any) => {
 
 const getAccount = catchAsync(async (req: any, res: any) =>{
     res.status(200).render('account', {
-
+        title: 'Your account details'
     })
 })
 
-export { getOverview, getTour, login, getAccount }
+const updateUserData = catchAsync(async (req: any, res: any) => {
+    const user = await User.findOneAndUpdate(req.body.id, {
+        name: req.body.name,
+        email: req.body.email,
+    }, {
+        new: true,
+        runValidators: true
+    });
+    res.status(200).render('account', {
+        title: 'Your account',
+        user
+    });
+})
+
+export { getOverview, getTour, login, getAccount, updateUserData }
