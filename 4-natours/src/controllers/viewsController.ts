@@ -1,4 +1,6 @@
+import { NextFunction } from "express";
 import Tour from "../models/tourModel";
+import { AppError } from "../utils/appError";
 import catchAsync from "../utils/catchAsync";
 
 const getOverview = catchAsync(async (req: any, res: any) => {
@@ -13,13 +15,17 @@ const getOverview = catchAsync(async (req: any, res: any) => {
     });
 })
 
-const getTour = catchAsync(async (req: any, res: any) => {
+const getTour = catchAsync(async (req: any, res: any, next: NextFunction) => {
     const slug = req.params.slug;
     // 1) Get the data, for requested tour (including reiviews and guides)
     const tour =  await Tour.findOne({ slug }).populate({
         path: 'reviews',
         select: 'review rating user',
     });
+
+    if(!tour){
+        return next(new AppError('There is no tour with that name', 404));
+    }
 
     // 2) Build template
     // 3) Render template using step 1)
