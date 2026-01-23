@@ -12987,7 +12987,7 @@ require("core-js/modules/web.immediate.js");
 require("core-js/modules/web.dom.iterable.js");
 require("regenerator-runtime/runtime.js");
 var _login = require("./login");
-var loginForm = document.querySelector('.form');
+var loginForm = document.querySelector('.login--form');
 var logoutButton = document.querySelector('.nav__el--logout');
 if (loginForm) {
   loginForm.addEventListener('submit', function (e) {
