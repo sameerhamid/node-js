@@ -33,18 +33,17 @@ const upload = multer({
 });
 const uploadUserPhoto = upload.single('photo');
 
-const resizeUserPhoto = (req: any, res: any, next: NextFunction) => {
+const resizeUserPhoto = catchAsync(async (req: any, res: any, next: NextFunction) => {
     if (!req.file) {
         return next();
     }
     req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`
-    sharp(req.file.buffer)
+    await sharp(req.file.buffer)
         .resize(500, 500, /*{ fit: 'contain' }*/)
         .toFormat('jpeg').jpeg({ quality: 90 })
         .toFile(`public/img/users/${req.file.filename}`);
-        console.log("calling")
     next();
-}
+})
 
 const filterObj = (obj: Record<string, any>, ...allowedFields: string[]) => {
     const newObj: Record<string, any> = {};
