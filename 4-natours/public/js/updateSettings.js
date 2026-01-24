@@ -9,9 +9,9 @@ export const updateSettings = async (data, type) => {
             method: 'PATCH',
             url,
             data,
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            // headers: {
+            //     'Content-Type': 'application/json'
+            // }
         });
         if (res?.data?.status === 'success') {
             showAlert('success', `${type?.toUpperCase()} ppdated successfull!`);

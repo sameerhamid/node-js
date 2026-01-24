@@ -12880,10 +12880,10 @@ var updateSettings = exports.updateSettings = /*#__PURE__*/function () {
           return (0, _axios.default)({
             method: 'PATCH',
             url: url,
-            data: data,
-            headers: {
-              'Content-Type': 'application/json'
-            }
+            data: data
+            // headers: {
+            //     'Content-Type': 'application/json'
+            // }
           });
         case 2:
           res = _context.v;
@@ -13068,12 +13068,14 @@ if (logoutButton) {
 if (updateUserDataForm) {
   updateUserDataForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    var name = document.getElementById('name').value;
-    var email = document.getElementById('email').value;
-    (0, _updateSettings.updateSettings)({
-      name: name,
-      email: email
-    }, 'data');
+    var formData = new FormData();
+    formData.append('name', document.getElementById('name').value);
+    formData.append('email', document.getElementById('email').value);
+    var photoInput = document.getElementById('photo');
+    if (photoInput.files.length > 0) {
+      formData.append('photo', photoInput.files[0]);
+    }
+    (0, _updateSettings.updateSettings)(formData, 'data');
   });
 }
 if (updateUserPasswordForm) {
@@ -13134,7 +13136,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55143" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57176" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

@@ -29,9 +29,14 @@ if (logoutButton) {
 if (updateUserDataForm) {
     updateUserDataForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        updateSettings({ name, email }, 'data')
+        const formData = new FormData();
+        formData.append('name', document.getElementById('name').value);
+        formData.append('email', document.getElementById('email').value);
+        const photoInput = document.getElementById('photo');
+        if (photoInput.files.length > 0) {
+            formData.append('photo', photoInput.files[0]);
+        }
+        updateSettings(formData, 'data');
     })
 }
 
