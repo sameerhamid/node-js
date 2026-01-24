@@ -46,14 +46,15 @@ const getMe = (req: any, res: any, next: NextFunction) => {
 }
 
 const updateMe = catchAsync(async (req: any, res: any, next: NextFunction) => {
-    console.log('file>>>>>>', req.file);
-    console.log('boyd>>>>>>', req.body);
     // 1) Create error if user POSTs password Data
     if(req.body?.password || req.body?.confirmPassword){
         return next(new AppError('This route is not password updates. Please user /updateMyPassword.', 400))
     }
     // 2) Filter unwanted fileds names that are not allowed to be updated
     const filteredBody = filterObj(req.body, 'name', 'email');
+    if(req.file){
+        filteredBody.photo = req.file.filename;
+    }
     // 3) Update user Document
     const user = await User.findByIdAndUpdate(req.user.id, filteredBody, { new: true, runValidators: true });
     res.status(200).json({
