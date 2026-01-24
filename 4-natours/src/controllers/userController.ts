@@ -37,12 +37,11 @@ const resizeUserPhoto = (req: any, res: any, next: NextFunction) => {
     if (!req.file) {
         return next();
     }
-    req.file.fileName = `user-${req.user.id}-${Date.now()}.jpeg`
-    console.log(req.file)
+    req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`
     sharp(req.file.buffer)
         .resize(500, 500, /*{ fit: 'contain' }*/)
         .toFormat('jpeg').jpeg({ quality: 90 })
-        .toFile(`public/img/users/${req.file.fileName}`);
+        .toFile(`public/img/users/${req.file.filename}`);
         console.log("calling")
     next();
 }
