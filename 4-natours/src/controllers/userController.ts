@@ -1,8 +1,34 @@
 import { NextFunction } from 'express';
+import multer from 'multer';
 import User from '../models/userModel';
 import catchAsync from '../utils/catchAsync';
 import { AppError } from '../utils/appError';
 import { deletOne, getAll, getOne, updateOne } from './handlerFactory';
+
+const multerStorage = multer.diskStorage({
+    destination: (req, file, cb) =>{
+        cb(null, 'public/img/users')
+    },
+    filename: (req: any, file, cb) => {
+        // user-userId-currentTimeStamp
+        const ext = file.mimetype.split('/')[1];
+        cb(null, `user-${req.user.id}-${Date.now()}.${ext}`)
+    }
+});
+
+const multerFiler = (req: any, file: Express.Multer.File, cb: any) => {
+    if (file.mimetype.startsWith('image')) {
+        cb(null, true);
+    } else {
+        cb(new AppError('Not an image! Please upload only images.', 400), false)
+    }
+}
+
+const upload = multer({
+    storage: multerStorage,
+    fileFilter: multerFiler
+});
+const uploadUserPhoto = upload.single('photo');
 
 const filterObj = (obj: Record<string, any>, ...allowedFields: string[]) => {
     const newObj: Record<string, any> = {};
@@ -61,4 +87,4 @@ const getUser = getOne(User);
 const updateUser = updateOne(User);
 const deleteUser = deletOne(User)
 
-export { getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, deleteMe, getMe }
+export { getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, deleteMe, getMe, uploadUserPhoto }
