@@ -1,20 +1,23 @@
 import { NextFunction } from 'express';
 import multer from 'multer';
+import sharp from 'sharp';
 import User from '../models/userModel';
 import catchAsync from '../utils/catchAsync';
 import { AppError } from '../utils/appError';
 import { deletOne, getAll, getOne, updateOne } from './handlerFactory';
 
-const multerStorage = multer.diskStorage({
-    destination: (req, file, cb) =>{
-        cb(null, 'public/img/users')
-    },
-    filename: (req: any, file, cb) => {
-        // user-userId-currentTimeStamp
-        const ext = file.mimetype.split('/')[1];
-        cb(null, `user-${req.user.id}-${Date.now()}.${ext}`)
-    }
-});
+// const multerStorage = multer.diskStorage({
+//     destination: (req, file, cb) =>{
+//         cb(null, 'public/img/users')
+//     },
+//     filename: (req: any, file, cb) => {
+//         // user-userId-currentTimeStamp
+//         const ext = file.mimetype.split('/')[1];
+//         cb(null, `user-${req.user.id}-${Date.now()}.${ext}`)
+//     }
+// });
+
+const multerStorage = multer.memoryStorage();
 
 const multerFiler = (req: any, file: Express.Multer.File, cb: any) => {
     if (file.mimetype.startsWith('image')) {
@@ -29,6 +32,20 @@ const upload = multer({
     fileFilter: multerFiler
 });
 const uploadUserPhoto = upload.single('photo');
+
+const resizeUserPhoto = (req: any, res: any, next: NextFunction) => {
+    if (!req.file) {
+        return next();
+    }
+    req.file.fileName = `user-${req.user.id}-${Date.now()}.jpeg`
+    console.log(req.file)
+    sharp(req.file.buffer)
+        .resize(500, 500, /*{ fit: 'contain' }*/)
+        .toFormat('jpeg').jpeg({ quality: 90 })
+        .toFile(`public/img/users/${req.file.fileName}`);
+        console.log("calling")
+    next();
+}
 
 const filterObj = (obj: Record<string, any>, ...allowedFields: string[]) => {
     const newObj: Record<string, any> = {};
@@ -88,4 +105,4 @@ const getUser = getOne(User);
 const updateUser = updateOne(User);
 const deleteUser = deletOne(User)
 
-export { getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, deleteMe, getMe, uploadUserPhoto }
+export { getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, deleteMe, getMe, uploadUserPhoto, resizeUserPhoto }

@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import {getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, deleteMe, getMe, uploadUserPhoto} from '../controllers/userController';
+import {getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, deleteMe, getMe, uploadUserPhoto, resizeUserPhoto} from '../controllers/userController';
 import { forgotPassword, login, logout, resetPassword, restrictTo, signUp, updatePassword, verfiyToken } from '../controllers/authController';
 import { EUserRole } from '../models/userModel';
 
@@ -17,7 +17,7 @@ router.patch('/resetPassword/:token', resetPassword);
 router.use(verfiyToken);
 router.patch('/updateMyPassword', updatePassword);
 router.get('/me', getMe, getUser);
-router.patch('/updateMe', uploadUserPhoto, updateMe);
+router.patch('/updateMe', uploadUserPhoto, resizeUserPhoto, updateMe);
 router.delete('/deleteMe', deleteMe)
 
 router.use(restrictTo([EUserRole.ADMIN]));
