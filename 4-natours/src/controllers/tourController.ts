@@ -1,3 +1,4 @@
+import multer from 'multer';
 import Tour from './../models/tourModel';
 import { NextFunction } from 'express'
 import catchAsync from '../utils/catchAsync';
@@ -5,6 +6,31 @@ import { createOne, deletOne, getAll, getOne, updateOne } from './handlerFactory
 import { AppError } from '../utils/appError';
 
 // const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`).toString()) as [any];
+
+const multerStorage = multer.memoryStorage();
+
+const multerFiler = (req: any, file: Express.Multer.File, cb: any) => {
+	if (file.mimetype.startsWith('image')) {
+		cb(null, true);
+	} else {
+		cb(new AppError('Not an image! Please upload only images.', 400), false)
+	}
+}
+
+const upload = multer({
+	storage: multerStorage,
+	fileFilter: multerFiler
+});
+
+const uploadTourImages = upload.fields([
+	{ name: 'imageCover', maxCount: 1 },
+	{ name: 'images', maxCount: 3 }
+]);
+
+const resizeTourImages = (req: any, res: any, next: NextFunction) => {
+	  console.log(req.files, 'files>>>>>>>>>');
+	  next();
+}
 
 const aliasTopTours = async (req: any, res: any, next: NextFunction) => {
 	req.query.limit = '5';
@@ -143,4 +169,4 @@ const getDistances = catchAsync(async (req: any, res: any, next: NextFunction) =
 	})
 })
 
-export { getAllTours, getTour, createTour, updateTour, deletTour, aliasTopTours, getTourStats, getMonthlyPlan, getToursWithin, getDistances };
+export { getAllTours, getTour, createTour, updateTour, deletTour, aliasTopTours, getTourStats, getMonthlyPlan, getToursWithin, getDistances, uploadTourImages, resizeTourImages };
