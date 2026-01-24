@@ -1,9 +1,10 @@
 import express from 'express';
+import multer from 'multer';
 import {getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, deleteMe, getMe} from '../controllers/userController';
 import { forgotPassword, login, logout, resetPassword, restrictTo, signUp, updatePassword, verfiyToken } from '../controllers/authController';
 import { EUserRole } from '../models/userModel';
 
-
+const upload = multer({ dest: 'public/img/users'});
 const router = express.Router();
 
 router.post('/signup', signUp);
@@ -17,7 +18,7 @@ router.patch('/resetPassword/:token', resetPassword);
 router.use(verfiyToken);
 router.patch('/updateMyPassword', updatePassword);
 router.get('/me', getMe, getUser);
-router.patch('/updateMe', updateMe);
+router.patch('/updateMe', upload.single('photo'), updateMe);
 router.delete('/deleteMe', deleteMe)
 
 router.use(restrictTo([EUserRole.ADMIN]));

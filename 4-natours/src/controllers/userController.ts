@@ -20,6 +20,8 @@ const getMe = (req: any, res: any, next: NextFunction) => {
 }
 
 const updateMe = catchAsync(async (req: any, res: any, next: NextFunction) => {
+    console.log('file>>>>>>', req.file);
+    console.log('boyd>>>>>>', req.body);
     // 1) Create error if user POSTs password Data
     if(req.body?.password || req.body?.confirmPassword){
         return next(new AppError('This route is not password updates. Please user /updateMyPassword.', 400))
