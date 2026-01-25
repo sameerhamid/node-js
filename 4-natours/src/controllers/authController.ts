@@ -4,7 +4,7 @@ import { NextFunction } from "express";
 import User, { EUserRole, IUser } from "../models/userModel";
 import catchAsync from "../utils/catchAsync";
 import { AppError } from '../utils/appError';
-import sendEamail from '../utils/email';
+import sendEamail, { Email } from '../utils/email';
 
 
 const singnToken = (userId: string) => {
@@ -40,6 +40,9 @@ const signUp = catchAsync(async (req: any, res: any, next: NextFunction) => {
         passwordChangedAt: req.body.passwordChangedAt,
         role: req.body.role
     });
+    const url = `${req.protocol}://${req.get('host')}/me`;
+    console.log('url>>>>>', url);
+    await new Email(newUser, url).sendWelcome();
     createSendToken(newUser, 201, res);
 });
 
