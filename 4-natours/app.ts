@@ -7,6 +7,7 @@ import monogSanitize from 'express-mongo-sanitize';
 import hpp from 'hpp';
 import cookieParser from 'cookie-parser';
 import { xss } from 'express-xss-sanitizer';
+import compression from 'compression';
 import tourRouter from './src/routes/tourRoutes'
 import userRouter from './src/routes/userRoutes'
 import reviewRouter from './src/routes/reviewRoutes'
@@ -126,6 +127,8 @@ app.use((req: any, res, next) => {
     // console.log(req.cookies);
     next();
 })
+
+app.use(compression())
 
 // 3) -------------- ROUTES ----------
 
