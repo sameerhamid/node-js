@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import pug from 'pug';
-import htmlToText from 'html-to-text';
+import { htmlToText } from 'html-to-text';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { IUser } from '../models/userModel';
 
@@ -78,7 +78,7 @@ export class Email {
     // Send the actual email
     public async send(template: string, subject: string) {
         // 1) Render HTML for email based on the pug template
-        const html = pug.renderFile(`${__dirname}/../views/emails/${template}.pug`, {
+        const html = pug.renderFile(`${__dirname}/../views/email/${template}.pug`, {
             firstName : this.firstName,
             url: this.url,
             subject: subject,
@@ -90,7 +90,7 @@ export class Email {
             to: this.to,
             subject,
             html,
-            text: htmlToText.convert(html),
+            text: htmlToText(html),
         }
         // 3) Create a transport and send email
         await this.newTransport().sendMail(mailOptions);
