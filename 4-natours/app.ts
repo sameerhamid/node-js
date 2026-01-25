@@ -30,17 +30,56 @@ app.set('query parser', 'extended');
 // Set Security http headers
 // app.use(helmet());
 
+// app.use(
+//   helmet.contentSecurityPolicy({
+//     directives: {
+//       defaultSrc: ["'self'"],
+//       connectSrc: ["'self'", "http://127.0.0.1:3000"],
+//       scriptSrc: ["'self'", "'unsafe-inline'"],
+//       styleSrc: ["'self'", "'unsafe-inline'", "https:"],
+//       imgSrc: ["'self'", "data:", "https:"]
+//     }
+//   })
+// );
+
 app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'"],
-      connectSrc: ["'self'", "http://127.0.0.1:3000"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https:"],
-      imgSrc: ["'self'", "data:", "https:"]
-    }
-  })
+    helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: ["'self'"],
+
+            connectSrc: [
+                "'self'",
+                "http://127.0.0.1:3000",
+                "https://api.stripe.com"
+            ],
+
+            scriptSrc: [
+                "'self'",
+                "'unsafe-inline'",
+                "https://js.stripe.com"
+            ],
+
+            frameSrc: [
+                "'self'",
+                "https://js.stripe.com"
+            ],
+
+            styleSrc: [
+                "'self'",
+                "'unsafe-inline'",
+                "https:"
+            ],
+
+            imgSrc: [
+                "'self'",
+                "data:",
+                "https://*.stripe.com",
+                "https:"
+            ]
+        }
+    })
 );
+
 
 
 // Development logging
