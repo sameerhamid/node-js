@@ -4,47 +4,7 @@ import { htmlToText } from 'html-to-text';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { IUser } from '../models/userModel';
 
-interface IOptionsType {
-    email: string;
-    subject: string;
-    text: string;
-}
-
-const sendEmail = async (options: IOptionsType) => {
-    // 1) Create a transporter
-    // const transporter = nodemailer.createTransport({
-    //     service: 'Gmail',
-    //     auth: {
-    //         user: process.env.EMAIL_USERNAME,
-    //         pass: process.env.EMAIL_PASSWORD
-    //     }
-    //     // Activate in gmail "less secure app" option
-    // })
-    const transporter = nodemailer.createTransport(
-        {
-            host: process.env.MAILTRAP_HOST!,
-            port: Number(process.env.MAILTRAP_PORT!),
-            secure: false,
-            family: 4,
-            auth: {
-                user: process.env.MAILTRAP_USER!,
-                pass: process.env.MAILTRAP_PASS!,
-            },
-        } as SMTPTransport.Options
-    );
-
-    // 2) Define email options
-    const mailOptions = {
-        from: 'Sameer <hello@sameer.io>',
-        to: options.email,
-        subject: options.subject,
-        text: options.text
-    }
-    // 3) Send the email
-    await transporter.sendMail(mailOptions)
-}
-
-export class Email {
+export default class Email {
     private to: string;
     private firstName: string;
     private url: string;
@@ -76,7 +36,7 @@ export class Email {
     }
 
     // Send the actual email
-    public async send(template: string, subject: string) {
+    private async send(template: string, subject: string) {
         // 1) Render HTML for email based on the pug template
         const html = pug.renderFile(`${__dirname}/../views/email/${template}.pug`, {
             firstName : this.firstName,
@@ -99,6 +59,8 @@ export class Email {
     public async sendWelcome() {
         await this.send('welcome', 'Welcome to the Natours Family!');
     }
-}
 
-export default sendEmail;
+    public async sendPasswordResetLink() {
+        await this.send('resetPassword', 'Your password reset token (valid for only 10 minutes)')
+    }
+}

@@ -12802,7 +12802,7 @@ var login = exports.login = /*#__PURE__*/function () {
             (0, _alerts.showAlert)('success', 'Logged in successfull!');
             window.setTimeout(function () {
               location.assign('/');
-            }, 1000);
+            }, 600);
           }
           _context.n = 4;
           break;
@@ -12835,7 +12835,9 @@ var logout = exports.logout = /*#__PURE__*/function () {
           res = _context2.v;
           if ((res === null || res === void 0 || (_res$data2 = res.data) === null || _res$data2 === void 0 ? void 0 : _res$data2.status) === 'success') {
             (0, _alerts.showAlert)('success', 'Logged out successfull!');
-            location.reload(true);
+            window.setTimeout(function () {
+              location.assign('/');
+            }, 500);
           }
           _context2.n = 3;
           break;

@@ -4,7 +4,7 @@ import { NextFunction } from "express";
 import User, { EUserRole, IUser } from "../models/userModel";
 import catchAsync from "../utils/catchAsync";
 import { AppError } from '../utils/appError';
-import sendEamail, { Email } from '../utils/email';
+import Email from '../utils/email';
 
 
 const singnToken = (userId: string) => {
@@ -41,7 +41,6 @@ const signUp = catchAsync(async (req: any, res: any, next: NextFunction) => {
         role: req.body.role
     });
     const url = `${req.protocol}://${req.get('host')}/me`;
-    console.log('url>>>>>', url);
     await new Email(newUser, url).sendWelcome();
     createSendToken(newUser, 201, res);
 });
@@ -155,14 +154,9 @@ const forgotPassword = catchAsync(async (req: any, res: any, next: NextFunction)
     await user.save({ validateBeforeSave: false });
 
     // 3) Send it to users email
-    const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${token}`;
-    const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetUrl}.\nIf you did not forget your password, please ignore this email`
     try {
-        await sendEamail({
-            email: user.email,
-            subject: 'Your password reset token (valid for 10 min)',
-            text: message
-        })
+        const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${token}`;
+        await new Email(user, resetUrl).sendPasswordResetLink()
         res.status(200).json({
             status: 'success',
             message: 'Token sent to email!'
