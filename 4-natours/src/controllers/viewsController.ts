@@ -3,6 +3,7 @@ import Tour from "../models/tourModel";
 import { AppError } from "../utils/appError";
 import catchAsync from "../utils/catchAsync";
 import User from "../models/userModel";
+import Booking from "../models/bookingModel";
 
 const getOverview = catchAsync(async (req: any, res: any) => {
     // 1) Get tour data from collection
@@ -62,4 +63,16 @@ const updateUserData = catchAsync(async (req: any, res: any) => {
     });
 })
 
-export { getOverview, getTour, login, getAccount, updateUserData }
+const getMyTours = catchAsync(async (req: any, res: any, next: NextFunction) => {
+    // 1) Find all bookings
+    const bookings = await Booking.find({ user: req.user.id });
+    // 2) Find tours with returned IDs
+    const tourIDs = bookings.map(booking => booking.tour);
+    const tours = await Tour.find({ _id: { $in: tourIDs } });
+    return res.status(200).render('overview', {
+        title: 'My tours',
+        tours,
+    });
+})
+
+export { getOverview, getTour, login, getAccount, updateUserData, getMyTours }

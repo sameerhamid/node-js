@@ -1,5 +1,5 @@
 import express from "express"
-import { getAccount, getOverview, getTour, login, updateUserData } from "../controllers/viewsController";
+import { getAccount, getMyTours, getOverview, getTour, login, updateUserData } from "../controllers/viewsController";
 import { isLoggedIn, verfiyToken } from "../controllers/authController";
 import { createBookingCheckout } from "../controllers/bookingController";
 
@@ -10,6 +10,7 @@ router.use(isLoggedIn);
 router.get('/', createBookingCheckout, getOverview)
 router.get('/tour/:slug', getTour)
 router.get('/login', login)
+router.get('/my-tours',verfiyToken, getMyTours)
 
 router.post('/submit-user-data', updateUserData)
 
