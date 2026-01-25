@@ -10,7 +10,8 @@ import { xss } from 'express-xss-sanitizer';
 import tourRouter from './src/routes/tourRoutes'
 import userRouter from './src/routes/userRoutes'
 import reviewRouter from './src/routes/reviewRoutes'
-import viewRoutes from './src/routes/viewRoutes'
+import viewRouter from './src/routes/viewRoutes'
+import bookingRouter from './src/routes/bookingRouts'
 import { AppError } from './src/utils/appError';
 import globalErrorController from './src/controllers/errorController';
 
@@ -89,10 +90,11 @@ app.use((req: any, res, next) => {
 
 // 3) -------------- ROUTES ----------
 
-app.use('/', viewRoutes);
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/bookings', bookingRouter);
 
 app.use((req, res, next)=>{
     // res.status(404).json({
