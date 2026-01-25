@@ -26,10 +26,6 @@ class MQTT {
         this.client.on('message', this.onMessageReceived);
     }
 
-    public log = () => {
-        console.log("i am logging")
-    }
-
     public publish = (topic: string, message: string, opts?: IClientPublishOptions) => {
         this.client.publish(topic, message, { ...(opts ?? {}), qos: 2 });
     }

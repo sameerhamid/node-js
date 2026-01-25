@@ -159,7 +159,7 @@ tourSchema.pre(/^find/, function (this: Query<any, any>) {
 })
 
 tourSchema.post<QueryWithStart<any>>(/^find/, function (docs, next) {
-    console.log(`Query took ${Date.now() - this.start!} milliseconds`);
+    // console.log(`Query took ${Date.now() - this.start!} milliseconds`);
     next();
 });
 

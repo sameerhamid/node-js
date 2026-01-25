@@ -12940,9 +12940,6 @@ function _bookTour() {
           return (0, _axios.default)("/api/v1/bookings/checkout-session/".concat(tourId));
         case 1:
           session = _context.v;
-          console.log('session', session);
-
-          // 2) Create checkout from + charge the credit card
           _context.n = 2;
           return stripe.redirectToCheckout({
             sessionId: session.data.session.id
