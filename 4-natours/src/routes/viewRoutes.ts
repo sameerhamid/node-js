@@ -1,12 +1,13 @@
 import express from "express"
 import { getAccount, getOverview, getTour, login, updateUserData } from "../controllers/viewsController";
 import { isLoggedIn, verfiyToken } from "../controllers/authController";
+import { createBookingCheckout } from "../controllers/bookingController";
 
 const router = express.Router();
 
 router.get('/me', verfiyToken, getAccount)
 router.use(isLoggedIn);
-router.get('/', getOverview)
+router.get('/', createBookingCheckout, getOverview)
 router.get('/tour/:slug', getTour)
 router.get('/login', login)
 
