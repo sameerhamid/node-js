@@ -3,6 +3,7 @@ import { NextFunction } from 'express';
 import catchAsync from '../utils/catchAsync';
 import Tour from '../models/tourModel';
 import Booking from '../models/bookingModel';
+import { createOne, deletOne, getAll, getOne, updateOne } from './handlerFactory';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -57,4 +58,10 @@ const createBookingCheckout = catchAsync(async (req: any, res: any, next: NextFu
     res.redirect(req.originalUrl.split('?')[0]);
 })
 
-export { getCheckoutSession, createBookingCheckout };
+const createBooking = createOne(Booking);
+const getBooking = getOne(Booking);
+const getAllBookings = getAll(Booking);
+const updateBooking = updateOne(Booking);
+const deleteBooking = deletOne(Booking);
+
+export { getCheckoutSession, createBookingCheckout , createBooking, getBooking, getAllBookings, updateBooking, deleteBooking};
